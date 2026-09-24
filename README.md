@@ -104,5 +104,18 @@ Every claim was checked against the code (not just SPEC.md). Keep to these when 
 
 ## Deploy
 
-Upload everything except `_dev/` and `_fragments/` to any static host. Serve `404.html` for unknown paths,
-and long-cache `assets/` if your host allows it.
+Live preview: **https://tidemannesbjug.github.io/piano/** (repo `TidemannEsbjug/piano`, GitHub Pages from `main`, folder `/`).
+
+```bash
+./_dev/deploy.sh "what changed"
+```
+
+The script copies everything except `_dev/` and `_fragments/`, adds `.nojekyll`, and prefixes the root-absolute URLs in
+`404.html` with `/piano`. The Piano Tuner repo stays the source of truth; the Pages repo is only the output.
+
+**Private preview:** every page has `<meta name="robots" content="noindex, nofollow">`, `robots.txt` disallows everything,
+and `js/gate.js` asks for a password (`mango`) before anything shows. The password is in the source on purpose: this is a
+curtain, not security. Once entered it is remembered in that browser (localStorage `resonance.gate`); clear site data to
+see the gate again. The intro waits until the password is in. Without JavaScript the pages show only a short notice.
+Before a public launch: delete `js/gate.js` and its `<script>` / `ResonanceGate.mount()` / `<noscript>` lines, drop the
+robots meta, and restore `robots.txt`.
