@@ -1,0 +1,174 @@
+/* partials.css — the inharmonicity explainer (js/components/partials.js).
+   Text and controls are DOM; the ladder tracks, standing waves and beat strips are one canvas per view,
+   laid underneath the same CSS grid so numbers and drawing always line up. */
+
+.rc-partials { container-type: inline-size; position: relative; min-width: 0; font-family: var(--font-ui); font-variant-numeric: tabular-nums; }
+
+.rc-partials .rc-fallback { padding: 20px 22px; border: 1px solid var(--hairline); border-radius: var(--radius-lg); background: var(--surface); color: var(--text-2); font-size: var(--step--1); line-height: 1.55; }
+
+/* The frame: an instrument panel with a single amber string along its top edge. */
+.rc-partials .rc-partials__frame {
+  --pad: 24px;
+  position: relative; display: grid; gap: 0; padding: var(--pad); overflow: hidden;
+  border-radius: var(--radius-lg); border: 1px solid var(--hairline);
+  background: linear-gradient(180deg, #151820, #0f1116);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 50px 100px -50px rgb(0 0 0 / 0.95), 0 30px 120px -60px rgb(255 160 70 / 0.18);
+}
+.rc-partials .rc-partials__frame::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1.5px;
+  background: linear-gradient(90deg, rgb(255 180 84 / 0), rgb(255 180 84 / 0.7) 30%, rgb(255 180 84 / 0.7) 70%, rgb(255 180 84 / 0));
+}
+.rc-partials.rc-partials--in-panel .rc-partials__frame { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.rc-partials.rc-partials--in-panel .rc-partials__frame::before { display: none; }
+
+.rc-partials .rc-partials__sec { display: grid; gap: 12px; min-width: 0; }
+.rc-partials .rc-partials__sec--oct { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--hairline); }
+
+/* ---------- Header: note selector + what the app listens to ---------- */
+.rc-partials .rc-partials__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; }
+.rc-partials .rc-partials__seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: minmax(84px, 1fr); gap: 3px; padding: 3px; border-radius: 12px; background: var(--surface-2); }
+.rc-partials .rc-partials__segbtn {
+  display: grid; justify-items: center; align-content: center; gap: 1px; min-height: 44px; padding: 3px 12px; border-radius: 9px;
+  color: var(--text-2); border: 1px solid transparent;
+  transition: background-color var(--t-state) var(--ease), color var(--t-state) var(--ease), border-color var(--t-state) var(--ease);
+}
+.rc-partials .rc-partials__segbtn:hover { color: var(--text); }
+.rc-partials .rc-partials__segbtn[aria-pressed="true"] { background: rgb(79 163 255 / 0.16); border-color: rgb(79 163 255 / 0.55); color: var(--text); }
+.rc-partials .rc-partials__segnote { font-size: 0.9375rem; font-weight: 700; line-height: 1.1; }
+.rc-partials .rc-partials__segsub { font-size: 0.6875rem; font-weight: 600; line-height: 1.1; color: var(--text-2); white-space: nowrap; }
+.rc-partials .rc-partials__segbtn[aria-pressed="true"] .rc-partials__segsub { color: var(--accent); }
+
+.rc-partials .rc-partials__listen { white-space: normal; gap: 8px; min-height: 28px; }
+.rc-partials .rc-partials__node { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--in-tune); box-shadow: 0 0 7px rgb(61 220 132 / 0.9); }
+
+/* ---------- Shared: canvas under a grid "table" ---------- */
+.rc-partials .rc-partials__ladder, .rc-partials .rc-partials__oct { position: relative; min-width: 0; }
+.rc-partials .rc-partials__canvas { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; pointer-events: none; }
+.rc-partials .rc-partials__table { position: relative; display: grid; }
+
+.rc-partials .rc-partials__row {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr) 66px 86px; column-gap: 10px; align-items: center;
+  height: 30px; padding: 0 8px; font-size: 0.8125rem; line-height: 1;
+}
+.rc-partials .rc-partials__row--head { height: 26px; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.rc-partials .rc-partials__row--axis { height: 24px; }
+.rc-partials .rc-partials__c-n { text-align: center; font-weight: 700; color: var(--text-2); }
+.rc-partials .rc-partials__row--head .rc-partials__c-n { font-style: italic; text-transform: none; font-size: 0.8125rem; letter-spacing: 0; }
+.rc-partials .rc-partials__row--head .rc-partials__c-track { display: flex; align-items: center; justify-content: flex-end; gap: 6px; white-space: nowrap; overflow: hidden; }
+.rc-partials .rc-partials__c-cents { text-align: right; font-weight: 700; color: var(--reference); white-space: nowrap; }
+.rc-partials .rc-partials__c-hz { text-align: right; color: var(--text-2); white-space: nowrap; }
+.rc-partials .rc-partials__row--head .rc-partials__c-cents, .rc-partials .rc-partials__row--head .rc-partials__c-hz { color: var(--text-2); }
+.rc-partials .rc-partials__row.is-zero .rc-partials__c-cents { color: var(--text-2); font-weight: 600; }
+.rc-partials .rc-partials__row.is-listen .rc-partials__c-n { color: var(--in-tune); }
+.rc-partials .rc-partials__row.is-listen .rc-partials__c-hz { color: var(--text); }
+.rc-partials .rc-partials__row.is-extrap .rc-partials__c-n,
+.rc-partials .rc-partials__row.is-extrap .rc-partials__c-cents,
+.rc-partials .rc-partials__row.is-extrap .rc-partials__c-hz { color: var(--text-2); opacity: 0.55; font-weight: 500; }
+
+/* legend keys */
+.rc-partials .rc-partials__key { flex: none; display: inline-block; width: 3.5px; height: 12px; border-radius: 2px; margin-left: 6px; }
+.rc-partials .rc-partials__key--tick { width: 1.5px; background: var(--text-2); border-radius: 0; }
+.rc-partials .rc-partials__key--real { background: var(--reference); }
+.rc-partials .rc-partials__key--upper { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+.rc-partials .rc-partials__scale { font-size: 0.75rem; line-height: 1.45; color: var(--text-2); padding: 0 8px; }
+
+/* ---------- Sliders ---------- */
+.rc-partials .rc-partials__control { display: grid; gap: 0; margin-top: 4px; padding: 12px 14px 12px; border-radius: 14px; background: rgb(255 255 255 / 0.025); border: 1px solid var(--hairline); }
+.rc-partials .rc-partials__controlhead { display: flex; align-items: center; gap: 10px; min-height: 28px; }
+.rc-partials .rc-partials__label { font-size: 0.8125rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.rc-partials .rc-partials__label i { font-family: var(--font-display); font-size: 1.15em; font-weight: 400; }
+.rc-partials .rc-partials__value { font-size: 0.8125rem; font-weight: 650; color: var(--accent); min-width: 0; }
+.rc-partials .rc-partials__reset {
+  margin-left: auto; min-width: 64px; min-height: 40px; margin-block: -6px; padding: 0 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; color: var(--accent);
+  transition: opacity var(--t-state) var(--ease), background-color var(--t-state) var(--ease);
+}
+.rc-partials .rc-partials__reset:hover:not(:disabled) { background: rgb(79 163 255 / 0.12); }
+.rc-partials .rc-partials__reset:disabled { opacity: 0; cursor: default; }
+.rc-partials .rc-partials__pause { min-width: 56px; min-height: 40px; margin-block: -6px; padding: 0 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; color: var(--text-2); border: 1px solid var(--hairline); transition: color var(--t-state) var(--ease), border-color var(--t-state) var(--ease); }
+.rc-partials .rc-partials__pause:hover, .rc-partials .rc-partials__pause[aria-pressed="true"] { color: var(--text); border-color: rgb(232 234 240 / 0.4); }
+@media (pointer: coarse) { .rc-partials .rc-partials__pause { min-height: 44px; } }
+
+.rc-partials .rc-partials__range { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 40px; margin: 0; padding: 0; background: transparent; cursor: pointer; touch-action: pan-y; }
+.rc-partials .rc-partials__range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--surface-2); }
+.rc-partials .rc-partials__range::-moz-range-track { height: 4px; border-radius: 2px; background: var(--surface-2); }
+.rc-partials .rc-partials__range--b::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--surface-2), rgb(255 180 84 / 0.75)); }
+.rc-partials .rc-partials__range--b::-moz-range-track { background: linear-gradient(90deg, var(--surface-2), rgb(255 180 84 / 0.75)); }
+.rc-partials .rc-partials__range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); box-shadow: 0 0 0 1px rgb(79 163 255 / 0.7); }
+.rc-partials .rc-partials__range::-moz-range-thumb { box-sizing: border-box; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); box-shadow: 0 0 0 1px rgb(79 163 255 / 0.7); }
+.rc-partials .rc-partials__range:focus-visible { outline: 2px solid transparent; outline-offset: 2px; }
+.rc-partials .rc-partials__range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+.rc-partials .rc-partials__range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+
+.rc-partials .rc-partials__ends { position: relative; display: flex; justify-content: space-between; margin-top: -6px; font-size: 0.6875rem; font-weight: 600; color: var(--text-2); line-height: 1.2; }
+.rc-partials .rc-partials__default { position: absolute; top: 0; left: calc(10px + var(--p, 0.5) * (100% - 20px)); transform: translateX(-50%); color: var(--text-2); transition: left var(--t-state) var(--ease); }
+.rc-partials .rc-partials__default::before { content: ""; position: absolute; left: 50%; top: -9px; width: 1.5px; height: 6px; margin-left: -0.75px; background: var(--text-2); }
+
+/* ---------- View 2: octaves ---------- */
+.rc-partials .rc-partials__title { font-size: 1.0625rem; font-weight: 700; color: var(--text); }
+.rc-partials .rc-partials__intro { font-size: 0.8125rem; line-height: 1.5; color: var(--text-2); margin-top: -6px; }
+.rc-partials .rc-partials__sec--oct .rc-partials__controlhead { margin-bottom: -6px; flex-wrap: wrap; row-gap: 0; }
+
+.rc-partials .rc-partials__orow {
+  display: grid; grid-template-columns: 132px minmax(0, 1fr) 104px 80px; column-gap: 12px; align-items: center;
+  height: 50px; padding: 0 8px; font-size: 0.8125rem; line-height: 1.15;
+}
+.rc-partials .rc-partials__orow--head { height: 26px; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.rc-partials .rc-partials__orow--head .rc-partials__o-track { display: flex; align-items: center; justify-content: flex-end; gap: 6px; white-space: nowrap; overflow: hidden; }
+.rc-partials .rc-partials__orow--axis { height: 22px; }
+.rc-partials .rc-partials__orow--slider { height: 40px; margin-top: -12px; }
+.rc-partials .rc-partials__o-pair { display: grid; gap: 3px; min-width: 0; }
+.rc-partials .rc-partials__o-pair b { font-size: 0.9375rem; font-weight: 700; color: var(--text); }
+.rc-partials .rc-partials__pairsub { font-size: 0.6875rem; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+.rc-partials .rc-partials__o-num { display: grid; gap: 3px; justify-items: end; text-align: right; white-space: nowrap; }
+.rc-partials .rc-partials__orow--head .rc-partials__o-num { display: block; }
+.rc-partials .rc-partials__beat { font-weight: 700; color: var(--text); }
+.rc-partials .rc-partials__mis { font-size: 0.6875rem; font-weight: 600; color: var(--text-2); }
+.rc-partials .rc-partials__orow.is-pure .rc-partials__beat, .rc-partials .rc-partials__orow.is-pure .rc-partials__mis { color: var(--in-tune); }
+.rc-partials .rc-partials__orow.is-off .rc-partials__o-pair b, .rc-partials .rc-partials__orow.is-off .rc-partials__beat { color: var(--text-2); font-weight: 600; }
+.rc-partials .rc-partials__orow.is-off { opacity: 0.6; }
+
+.rc-partials .rc-partials__presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.rc-partials .rc-partials__preset {
+  display: grid; justify-items: center; align-content: center; gap: 2px; min-height: 44px; padding: 4px 6px; border-radius: 10px;
+  border: 1px solid var(--hairline); background: rgb(255 255 255 / 0.02); color: var(--text); font-size: 0.75rem; font-weight: 700; line-height: 1.1; white-space: nowrap;
+  transition: background-color var(--t-state) var(--ease), border-color var(--t-state) var(--ease), color var(--t-state) var(--ease), opacity var(--t-state) var(--ease);
+}
+.rc-partials .rc-partials__preset:hover:not(:disabled) { border-color: rgb(79 163 255 / 0.6); }
+.rc-partials .rc-partials__preset[aria-pressed="true"] { background: rgb(79 163 255 / 0.16); border-color: rgb(79 163 255 / 0.55); }
+.rc-partials .rc-partials__preset:disabled { opacity: 0.45; cursor: default; }
+.rc-partials .rc-partials__presetsub { font-size: 0.6875rem; font-weight: 600; color: var(--text-2); }
+.rc-partials .rc-partials__preset[aria-pressed="true"] .rc-partials__presetsub { color: var(--accent); }
+
+.rc-partials .rc-partials__lead { font-size: 0.8125rem; line-height: 1.5; color: var(--text-2); }
+.rc-partials .rc-partials__caveat { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--hairline); font-size: 0.75rem; line-height: 1.5; color: var(--text-2); }
+
+/* ---------- Narrow columns / phones ---------- */
+@container (max-width: 559px) {
+  .rc-partials .rc-partials__frame { --pad: 14px; }
+  .rc-partials .rc-partials__wide { display: none; }
+  .rc-partials .rc-partials__seg { display: grid; width: 100%; grid-auto-columns: minmax(0, 1fr); }
+  .rc-partials .rc-partials__row { grid-template-columns: 16px minmax(0, 1fr) 56px 70px; column-gap: 6px; padding: 0 4px; font-size: 0.75rem; }
+  .rc-partials .rc-partials__row--head { font-size: 0.625rem; letter-spacing: 0.04em; }
+  .rc-partials .rc-partials__row--head .rc-partials__c-track { gap: 4px; }
+  .rc-partials .rc-partials__key { margin-left: 3px; }
+  .rc-partials .rc-partials__scale { padding: 0 4px; }
+  .rc-partials .rc-partials__orow { grid-template-columns: 26px minmax(0, 1fr) 58px 66px; column-gap: 6px; padding: 0 4px; font-size: 0.75rem; }
+  .rc-partials .rc-partials__orow--head { font-size: 0.625rem; letter-spacing: 0.04em; }
+  .rc-partials .rc-partials__pairsub { display: none; }
+  .rc-partials .rc-partials__o-pair b { font-size: 0.8125rem; }
+  .rc-partials .rc-partials__presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container (min-width: 560px) {
+  .rc-partials .rc-partials__narrowonly { display: none; }
+}
+@media (pointer: coarse) {
+  .rc-partials .rc-partials__range { height: 44px; }
+  .rc-partials .rc-partials__reset { min-height: 44px; }
+}
+
+/* Reflow at 320 CSS px: give the track the room; the offset matters more than the frequency. */
+@container (max-width: 300px) {
+  .rc-partials .rc-partials__row { grid-template-columns: 16px minmax(0, 1fr) 56px; }
+  .rc-partials .rc-partials__c-hz { display: none; }
+}

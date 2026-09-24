@@ -1,0 +1,394 @@
+/* Resonance Piano Tuner — marketing site
+   base.css: fonts, design tokens (mirrors App/Theme.swift, SPEC §17), reset, typography,
+   layout primitives, nav, buttons, App Store badge, footer, shared section components. */
+
+/* ---------- Fonts (self-hosted, OFL) ---------- */
+@font-face {
+  font-family: "Instrument Serif"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/InstrumentSerif-normal-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Serif"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/InstrumentSerif-normal-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/InstrumentSerif-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/InstrumentSerif-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* Nunito is only the fallback for browsers without ui-rounded (the app itself uses SF Rounded). */
+@font-face {
+  font-family: "Nunito"; font-style: normal; font-weight: 300 900; font-display: swap;
+  src: url("../assets/fonts/Nunito-normal-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Nunito"; font-style: normal; font-weight: 300 900; font-display: swap;
+  src: url("../assets/fonts/Nunito-normal-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ---------- Tokens ---------- */
+:root {
+  color-scheme: dark;
+
+  /* App palette — App/Theme.swift */
+  --bg: #0F1115;
+  --surface: #171A21;
+  --surface-2: #1F2430;
+  --text: #E8EAF0;
+  --text-2: #9AA3B2;
+  --dim: rgb(232 234 240 / 0.6);
+  --hairline: rgb(232 234 240 / 0.12);
+  --accent: #4FA3FF;      /* interactive controls */
+  --reference: #FFB454;   /* amber: the open / reference string */
+  --flat: #5AA9FF;
+  --sharp: #FF6B6B;
+  --in-tune: #3DDC84;
+  --warn: #FFC53D;
+  --measured: #A78BFA;
+  --raised: rgb(127 179 255 / 0.5);
+  --white-key: #E8EAF0;
+  --black-key: #1F2430;
+
+  /* Site-only atmosphere, sampled from the intro film */
+  --ink: #090A0D;
+  --copper: #C8753B;
+  --copper-deep: #7A3E1C;
+  --felt: #9C2F4A;
+  --verdigris: #2FB7B0;
+  --reference-soft: rgb(255 180 84 / 0.14);
+
+  /* Type */
+  --font-display: "Instrument Serif", "New York", ui-serif, "Iowan Old Style", Georgia, serif;
+  --font-ui: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Mono", Consolas, monospace;
+
+  --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.5rem);
+  --step-2: clamp(1.6rem, 1.3rem + 1.4vw, 2.5rem);
+  --step-3: clamp(2.25rem, 1.5rem + 3.2vw, 4.25rem);
+  --step-4: clamp(2.75rem, 1.4rem + 6vw, 6.5rem);
+
+  /* Layout */
+  --gutter: clamp(20px, 5vw, 56px);
+  --container: 1200px;
+  --section-y: clamp(96px, 13vw, 184px);
+  --radius: 10px;          /* Theme.Size.cornerRadius */
+  --radius-chip: 8px;
+  --radius-lg: 22px;
+  --nav-h: 64px;
+
+  /* Motion — Theme.Motion: 200 ms transitions, no bounce */
+  --ease: cubic-bezier(0.42, 0, 0.58, 1);         /* easeInOut */
+  --ease-out: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --t-state: 200ms;
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 16px); }
+body { margin: 0; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol { margin: 0; }
+ul[class], ol[class] { list-style: none; padding: 0; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---------- Page ---------- */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+/* Film grain over everything: keeps the big dark fields from banding. */
+body::after {
+  content: "";
+  position: fixed; inset: 0; z-index: 900; pointer-events: none;
+  opacity: 0.055; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection { background: rgb(255 180 84 / 0.32); color: #fff; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+.skip-link {
+  position: fixed; left: 16px; top: -64px; z-index: 1200;
+  padding: 10px 16px; border-radius: var(--radius); background: var(--text); color: var(--bg);
+  font-weight: 700; text-decoration: none; transition: top var(--t-state) var(--ease);
+}
+.skip-link:focus { top: 16px; }
+
+.nowrap { white-space: nowrap; }
+
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.container { width: min(100% - 2 * var(--gutter), var(--container)); margin-inline: auto; }
+.container--narrow { --container: 820px; }
+.container--wide { --container: 1360px; }
+
+/* ---------- Typography ---------- */
+.display, h1, h2 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.012em; text-wrap: balance; }
+h1, .h1 { font-size: var(--step-4); line-height: 0.96; }
+h2, .h2 { font-size: var(--step-3); line-height: 1.0; }
+h3, .h3 { font-family: var(--font-ui); font-size: var(--step-1); line-height: 1.25; font-weight: 650; letter-spacing: -0.005em; text-wrap: balance; }
+h4, .h4 { font-family: var(--font-ui); font-size: var(--step-0); font-weight: 700; }
+.display em, h1 em, h2 em { font-style: italic; color: var(--reference); }
+p { text-wrap: pretty; }
+.lede { font-size: var(--step-1); line-height: 1.5; color: var(--text-2); max-width: 42ch; }
+.lede strong, .prose strong { color: var(--text); font-weight: 650; }
+.prose { color: var(--text-2); max-width: 62ch; }
+.prose > * + * { margin-top: 1em; }
+.prose a, .link { color: var(--text); text-decoration: underline; text-decoration-color: rgb(255 180 84 / 0.6); text-underline-offset: 0.22em; text-decoration-thickness: 1px; transition: text-decoration-color var(--t-state) var(--ease), color var(--t-state) var(--ease); }
+.prose a:hover, .link:hover { color: var(--reference); text-decoration-color: var(--reference); }
+.num, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+small, .caption { font-size: var(--step--1); color: var(--text-2); }
+
+/* Eyebrow: tracked caps riding a short string, like the wordmark. */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--reference);
+}
+.eyebrow::before {
+  content: ""; width: 44px; height: 1.5px; border-radius: 1px;
+  background: linear-gradient(90deg, rgb(255 180 84 / 0.05), var(--reference));
+}
+.eyebrow--plain::before { display: none; }
+
+/* ---------- The string mark (IntroView.stringMark) ---------- */
+.string-mark { position: relative; display: block; width: var(--string-w, 220px); height: 16px; }
+.string-mark::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; border-radius: 1px;
+  background: linear-gradient(90deg, rgb(255 180 84 / 0.05), rgb(255 180 84 / 0.85), var(--accent), rgb(255 180 84 / 0.85), rgb(255 180 84 / 0.05));
+}
+.string-mark::after {
+  content: ""; position: absolute; left: 58%; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%;
+  background: var(--in-tune); box-shadow: 0 0 7px rgb(61 220 132 / 0.95);
+  animation: node-pulse 1s var(--ease) infinite alternate;
+}
+@keyframes node-pulse {   /* transform only, so it stays on the compositor; the glow scales with it (7 px → 9 px) */
+  from { transform: scale(1); }
+  to { transform: scale(1.2857); }
+}
+
+.wordmark { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: var(--text); }
+.wordmark__name { font-family: var(--font-ui); font-weight: 600; font-size: 0.9375rem; letter-spacing: 0.28em; padding-left: 0.28em; line-height: 1; }
+.wordmark .string-mark { --string-w: 100%; height: 9px; }
+.wordmark .string-mark::after { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; }
+
+/* ---------- Nav ---------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 800; height: var(--nav-h);
+  display: flex; align-items: center;
+  transition: background-color 300ms var(--ease), border-color 300ms var(--ease), backdrop-filter 300ms var(--ease);
+  border-bottom: 1px solid transparent;
+}
+.nav.is-scrolled { background: rgb(15 17 21 / 0.72); -webkit-backdrop-filter: saturate(140%) blur(18px); backdrop-filter: saturate(140%) blur(18px); border-bottom-color: var(--hairline); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: min(100% - 2 * var(--gutter), var(--container--nav, 1360px)); margin-inline: auto; }
+.nav__links { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 34px); }
+.nav__links a:not(.btn) { font-size: 0.9375rem; font-weight: 550; color: var(--text-2); text-decoration: none; transition: color var(--t-state) var(--ease); }
+.nav__links a:not(.btn):hover, .nav__links a[aria-current="true"] { color: var(--text); }
+@media (max-width: 820px) { .nav__links a:not(.btn) { display: none; } }
+
+/* ---------- Buttons ---------- */
+.btn {
+  --btn-bg: transparent; --btn-fg: var(--text); --btn-bd: rgb(232 234 240 / 0.22);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 44px; padding: 0 20px; border-radius: 999px;
+  border: 1px solid var(--btn-bd); background: var(--btn-bg); color: var(--btn-fg);
+  font-weight: 650; font-size: 0.9375rem; letter-spacing: 0.01em; text-decoration: none; white-space: nowrap;
+  transition: background-color var(--t-state) var(--ease), border-color var(--t-state) var(--ease), color var(--t-state) var(--ease), transform var(--t-state) var(--ease);
+}
+.btn:hover { --btn-bd: rgb(232 234 240 / 0.5); --btn-bg: rgb(232 234 240 / 0.06); }
+.btn:active { transform: scale(0.98); }
+.btn--solid { --btn-bg: var(--text); --btn-fg: var(--bg); --btn-bd: var(--text); }
+.btn--solid:hover { --btn-bg: #fff; --btn-bd: #fff; }
+.btn--amber { --btn-bg: var(--reference); --btn-fg: #1a1206; --btn-bd: var(--reference); }
+.btn--amber:hover { --btn-bg: #ffc274; --btn-bd: #ffc274; }
+.btn--sm { min-height: 36px; padding: 0 16px; font-size: 0.875rem; }
+.btn svg { width: 1em; height: 1em; flex: none; }
+
+/* "Download on the Mac App Store" badge — drawn, not an image, so it stays crisp. */
+.appstore-badge {
+  display: inline-flex; align-items: center; gap: 12px;
+  height: 56px; padding: 0 20px 0 16px; border-radius: 12px;
+  background: #000; color: #fff; border: 1px solid #a6a6a6; text-decoration: none;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  transition: border-color var(--t-state) var(--ease), box-shadow 300ms var(--ease), transform var(--t-state) var(--ease);
+  box-shadow: 0 10px 40px -12px rgb(255 180 84 / 0);
+}
+.appstore-badge:hover { border-color: #fff; box-shadow: 0 14px 44px -12px rgb(255 180 84 / 0.45); transform: translateY(-1px); }
+.appstore-badge:active { transform: translateY(0) scale(0.985); }
+.appstore-badge__logo { width: 30px; height: 30px; flex: none; fill: currentColor; margin-top: -4px; }
+.appstore-badge__text { display: flex; flex-direction: column; line-height: 1; text-align: left; }
+.appstore-badge__small { font-size: 11px; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 3px; }
+.appstore-badge__big { font-size: 21px; font-weight: 600; letter-spacing: -0.015em; white-space: nowrap; }
+.appstore-badge--sm { height: 44px; border-radius: 9px; padding: 0 14px 0 12px; gap: 9px; }
+.appstore-badge--sm .appstore-badge__logo { width: 22px; height: 22px; margin-top: -3px; }
+.appstore-badge--sm .appstore-badge__small { font-size: 9px; margin-bottom: 2px; }
+.appstore-badge--sm .appstore-badge__big { font-size: 16px; }
+
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+.cta-note { font-size: var(--step--1); color: var(--text-2); }
+.cta-note b { color: var(--text); font-weight: 650; }
+
+/* ---------- Sections ---------- */
+.section { position: relative; padding-block: var(--section-y); overflow-x: clip; }   /* clips the decorative glows; fixed children (the docked film) are unaffected */
+.section--tight { padding-block: calc(var(--section-y) * 0.6); }
+.section__head { display: grid; gap: 22px; margin-bottom: clamp(40px, 6vw, 80px); max-width: 900px; }
+.section__head--center { margin-inline: auto; text-align: center; justify-items: center; }
+.section__head--center .lede { max-width: 52ch; }
+
+/* Two-column feature row; .split--flip puts the visual first on wide screens. */
+.split { display: grid; gap: clamp(32px, 6vw, 96px); align-items: start; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+.split--flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.split--flip > :first-child { order: 2; }
+@media (min-width: 901px) { .split > .split__copy { position: sticky; top: min(calc(var(--nav-h) + 32px), calc(100vh - var(--copy-h, 0px) - 24px)); } }   /* --copy-h: js/main.js */   /* the copy keeps you company down a tall instrument */
+.split--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.split__copy { display: grid; gap: 20px; align-content: start; justify-items: start; }
+@media (max-width: 900px) {
+  .split, .split--even, .split--flip { grid-template-columns: minmax(0, 1fr); }
+  .split--flip > :first-child { order: 0; }
+}
+
+/* Surface card, as in the app's panels. */
+.card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: clamp(18px, 2.4vw, 28px); }
+.card--inset { background: linear-gradient(180deg, #141720, #11131a); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 40px 80px -48px rgb(0 0 0 / 0.9); }
+
+/* The app's chips (13 pt medium, 8 pt radius). */
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 2px 10px; border-radius: var(--radius-chip); background: var(--surface-2); color: var(--text); font-size: 0.8125rem; font-weight: 550; white-space: nowrap; }
+.chip--amber { background: rgb(255 180 84 / 0.14); color: var(--reference); }
+.chip--green { background: rgb(61 220 132 / 0.14); color: var(--in-tune); }
+.chip--purple { background: rgb(167 139 250 / 0.16); color: var(--measured); }
+.chip--blue { background: rgb(79 163 255 / 0.14); color: var(--accent); }
+
+kbd, .kbd { display: inline-grid; place-items: center; min-width: 1.9em; height: 1.9em; padding: 0 0.5em; border-radius: 7px; background: var(--surface-2); border: 1px solid var(--hairline); border-bottom-width: 2px; font-family: var(--font-ui); font-size: 0.8125rem; font-weight: 650; color: var(--text); }
+
+/* "Watch this part" — seeks the film to a chapter (js/film.js). */
+.watch-part {
+  display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; border-radius: 999px;
+  border: 1px solid var(--hairline); color: var(--text); font-size: 0.875rem; font-weight: 600; text-decoration: none;
+  transition: border-color var(--t-state) var(--ease), background-color var(--t-state) var(--ease);
+}
+.watch-part::before {
+  content: ""; width: 26px; height: 26px; border-radius: 50%; flex: none;
+  background: var(--reference) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 6.5v11l9-5.5z' fill='%231a1206'/%3E%3C/svg%3E") center / 18px no-repeat;
+}
+.watch-part:hover { border-color: rgb(255 180 84 / 0.6); background: var(--reference-soft); }
+.watch-part .num { color: var(--text-2); font-size: 0.8125rem; }
+
+/* Equations (MathML) */
+.equation { display: grid; gap: 10px; padding: 22px 24px; border-left: 1.5px solid var(--reference); background: linear-gradient(90deg, rgb(255 180 84 / 0.07), transparent 70%); border-radius: 0 var(--radius) var(--radius) 0; overflow-x: auto; }
+.equation math { font-size: 1.35em; color: var(--text); }
+.equation__note { font-size: var(--step--1); color: var(--text-2); }
+
+/* Background motif: piano strings, fanning hairlines. */
+.strings-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: -1; opacity: 0.5;
+  background: repeating-linear-gradient(96deg, transparent 0 22px, rgb(255 180 84 / 0.05) 22px 23px, transparent 23px 61px, rgb(232 234 240 / 0.035) 61px 62px);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, #000 0%, transparent 75%);
+}
+.glow { position: absolute; pointer-events: none; z-index: -1; width: 70vw; height: 70vw; max-width: 980px; max-height: 980px; border-radius: 50%; background: radial-gradient(closest-side, rgb(200 117 59 / 0.16), transparent 70%); filter: blur(10px); }
+
+/* ---------- Scroll reveal (only when JS is running) ---------- */
+html.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+html.js .reveal.is-in { opacity: 1; transform: none; }
+html.js .reveal:focus-visible, html.js .reveal:focus-within { opacity: 1; transform: none; transition-delay: 0s; }
+html.js .reveal--fade { transform: none; }
+@media (prefers-reduced-motion: reduce) { html.js .reveal { opacity: 1; transform: none; } }
+
+/* ---------- Footer ---------- */
+.footer { border-top: 1px solid var(--hairline); padding-block: 56px 40px; color: var(--text-2); font-size: 0.9375rem; }
+.footer__grid { display: grid; gap: 40px; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); align-items: start; }
+.footer__brand { display: grid; gap: 18px; justify-items: start; }
+.footer__col { display: grid; gap: 10px; align-content: start; }
+.footer__col h2 { font-family: var(--font-ui); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text); margin-bottom: 6px; }
+.footer a { color: var(--text-2); text-decoration: none; transition: color var(--t-state) var(--ease); }
+.footer a:hover { color: var(--text); }
+.footer__legal { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-size: 0.8125rem; }
+.footer__legal button { color: var(--text-2); text-decoration: underline; text-underline-offset: 0.2em; }
+.footer__legal button:hover { color: var(--text); }
+@media (max-width: 820px) { .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .footer__brand { grid-column: 1 / -1; } }
+
+/* ---------- Mobile sticky CTA ---------- */
+.sticky-cta {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 790; display: none;
+  padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom)); gap: 12px; align-items: center; justify-content: space-between;
+  background: rgb(15 17 21 / 0.86); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border-top: 1px solid var(--hairline);
+  transform: translateY(110%); visibility: hidden; transition: transform 320ms var(--ease-out), visibility 0s linear 320ms;
+}
+.sticky-cta.is-visible { transform: none; visibility: visible; transition-delay: 0s; }
+.sticky-cta__label { font-size: 0.8125rem; color: var(--text-2); line-height: 1.3; }
+.sticky-cta__label b { display: block; color: var(--text); font-size: 0.9375rem; }
+@media (max-width: 820px) { .sticky-cta { display: flex; } html { scroll-padding-bottom: 96px; } }   /* focus is never parked behind the bar */
+
+/* ---------- Store badges: App Store (iPhone, iPad) + Mac App Store ----------
+   html.is-ios / html.is-mac are set in <head> before first paint. The visitor's own store comes first;
+   a --compact group (sticky bar) shows only that one. */
+.store-badges { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; }
+html.is-mac .store-badges .appstore-badge--mac { order: -1; }
+.store-badges--compact .appstore-badge--mac { display: none; }
+html.is-mac .store-badges--compact .appstore-badge--mac { display: inline-flex; }
+html.is-mac .store-badges--compact .appstore-badge--ios { display: none; }
+@media (max-width: 560px) {
+  .store-badges { gap: 10px; }
+  .store-badges .appstore-badge { height: 46px; border-radius: 10px; padding: 0 14px 0 12px; gap: 9px; }
+  .store-badges .appstore-badge__logo { width: 22px; height: 22px; margin-top: -3px; }
+  .store-badges .appstore-badge__small { font-size: 9px; margin-bottom: 2px; }
+  .store-badges .appstore-badge__big { font-size: 17px; }
+}
+
+/* ---------- Password gate (js/gate.js) — a curtain for the private preview, not security ---------- */
+html.is-locked, html.is-locked body { overflow: hidden !important; }
+html.is-locked body > :not(.gate) { visibility: hidden !important; }
+.gate {
+  position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; padding: 24px;
+  background: radial-gradient(ellipse 60% 50% at 50% 42%, rgb(200 117 59 / 0.14), transparent 70%), var(--bg);
+  transition: opacity 420ms var(--ease);
+}
+.gate.is-leaving { opacity: 0; pointer-events: none; }
+.gate__card { display: grid; justify-items: center; gap: 14px; width: min(100%, 420px); text-align: center; }
+.gate__mark { display: grid; justify-items: center; gap: 6px; margin-bottom: 18px; }
+.gate__name { font-family: var(--font-ui); font-weight: 600; font-size: 1.375rem; letter-spacing: 0.28em; padding-left: 0.28em; color: var(--text); }
+.gate__mark .string-mark { --string-w: 240px; }
+.gate__title { font-family: var(--font-display); font-size: clamp(2rem, 1.4rem + 2.4vw, 2.75rem); line-height: 1.05; }
+.gate__text { color: var(--text-2); }
+.gate__row { display: flex; gap: 10px; width: 100%; margin-top: 10px; }
+.gate__input {
+  flex: 1; min-width: 0; min-height: 48px; padding: 0 18px; border-radius: 999px;
+  border: 1px solid rgb(232 234 240 / 0.22); background: var(--surface); color: var(--text); font-size: 1rem;
+  transition: border-color var(--t-state) var(--ease);
+}
+.gate__input::placeholder { color: var(--text-2); }
+.gate__input:focus { outline: none; border-color: var(--reference); box-shadow: 0 0 0 3px rgb(255 180 84 / 0.2); }
+.gate__btn { min-height: 48px; padding: 0 24px; }
+.gate__error { min-height: 1.5em; font-size: var(--step--1); color: var(--sharp); }
+.gate__card.is-wrong .gate__row { animation: gate-no 380ms var(--ease); }
+@keyframes gate-no { 20% { transform: translateX(-8px); } 45% { transform: translateX(7px); } 70% { transform: translateX(-4px); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .gate__card.is-wrong .gate__row { animation: none; } }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://resonancetuner.example/ is a placeholder origin; replace it before launch. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://resonancetuner.example/</loc>
+    <lastmod>2026-09-21</lastmod>
+  </url>
+  <url>
+    <loc>https://resonancetuner.example/support.html</loc>
+    <lastmod>2026-09-21</lastmod>
+  </url>
+  <url>
+    <loc>https://resonancetuner.example/privacy.html</loc>
+    <lastmod>2026-09-21</lastmod>
+  </url>
+</urlset>

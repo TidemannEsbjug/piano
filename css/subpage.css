@@ -1,0 +1,106 @@
+/* subpage.css — additions for privacy.html, support.html and 404.html.
+   The basics (.doc, .doc__head, .doc h2/h3, tables, code) live in page.css; everything here is prefixed .doc. */
+
+/* Sub-pages have no hero image under the nav, so give it a quiet warm wash instead. */
+.doc { position: relative; isolation: isolate; }
+.doc::before {
+  content: ""; position: absolute; z-index: -1; inset: 0 0 auto 0; height: 560px; pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 18% 0%, rgb(200 117 59 / 0.13), transparent 70%);
+}
+
+.doc__head h1 { max-width: 16ch; }
+.doc__head .lede { max-width: 56ch; }
+.doc__meta { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; font-size: var(--step--1); color: var(--text-2); }
+.doc__meta .chip { font-variant-numeric: tabular-nums; }
+
+/* The short version: the same amber-ruled block as the home page's equations. */
+.doc__summary {
+  display: grid; gap: 14px; padding: 24px 26px; margin-bottom: clamp(36px, 5vw, 56px); max-width: 70ch;
+  border-left: 1.5px solid var(--reference); border-radius: 0 var(--radius) var(--radius) 0;
+  background: linear-gradient(90deg, rgb(255 180 84 / 0.07), transparent 75%);
+}
+.doc__summary h2 { margin-top: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--reference); }
+.doc__summary ul { display: grid; gap: 10px; }
+.doc__summary li { position: relative; padding-left: 26px; color: var(--text-2); }
+.doc__summary li::before { content: ""; position: absolute; left: 2px; top: 0.72em; width: 12px; height: 1.5px; background: var(--reference); }
+.doc__summary li b, .doc__summary li strong { color: var(--text); font-weight: 650; }
+
+/* On this page */
+.doc__toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: clamp(28px, 4vw, 44px); }
+.doc__toc a {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--hairline); color: var(--text-2); font-size: 0.875rem; font-weight: 600; text-decoration: none;
+  transition: color var(--t-state) var(--ease), border-color var(--t-state) var(--ease), background-color var(--t-state) var(--ease);
+}
+.doc__toc a:hover { color: var(--text); border-color: rgb(255 180 84 / 0.6); background: var(--reference-soft); }
+
+/* Numbered sections: a mono numeral riding a short string, like the home page's step rail. */
+.doc__sections { counter-reset: doc-section; }
+.doc__section { counter-increment: doc-section; position: relative; padding-top: 30px; margin-top: clamp(40px, 5vw, 60px); border-top: 1px solid var(--hairline); scroll-margin-top: calc(var(--nav-h) + 8px); }
+.doc__section::before { content: ""; position: absolute; left: 0; top: -1px; width: 36px; height: 1.5px; background: var(--reference); }
+.doc__section > h2 { margin-top: 0; display: grid; gap: 8px; }
+.doc__section > h2::before { content: counter(doc-section, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.08em; color: var(--reference); }
+.doc__section > .prose { margin-top: 1em; }
+.doc .prose li b, .doc .prose li strong { color: var(--text); font-weight: 650; }
+.doc .prose kbd { margin-inline: 1px; }
+
+/* Words the app shows, quoted exactly. */
+.doc__said {
+  display: block; padding: 14px 18px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hairline);
+  color: var(--text); font-weight: 550;
+}
+.doc__said small { display: block; margin-top: 4px; font-weight: 400; }
+
+/* The order of work */
+.doc__steps { list-style: none; padding: 0; counter-reset: doc-step; display: grid; gap: 0; max-width: 70ch; }
+.doc__steps > li { counter-increment: doc-step; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 0 8px; padding: 18px 0; border-bottom: 1px solid var(--hairline); color: var(--text-2); }
+.doc__steps > li:first-child { border-top: 1px solid var(--hairline); }
+.doc__steps > li::before { content: counter(doc-step, decimal-leading-zero); grid-row: 1 / span 2; padding-top: 0.35em; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; color: var(--text-2); }
+.doc__steps h3 { margin-top: 0; font-size: var(--step-0); font-weight: 700; color: var(--text); }
+.doc__steps h3 small { margin-left: 8px; font-weight: 500; }
+.doc__steps p { margin-top: 4px; }
+
+.doc__section > .doc__steps { margin-top: 1.4em; }
+
+/* Shortcut tables */
+.doc__keys { white-space: nowrap; }
+.doc__table { font-size: var(--step-0); max-width: 70ch; margin-top: 1.2em; }   /* same measure as .prose */
+.doc__table td { font-size: 0.9375rem; }
+.doc__table caption { text-align: left; padding-bottom: 6px; color: var(--text-2); font-size: var(--step--1); }
+.doc__table th:first-child, .doc__table td:first-child { width: 9.5em; white-space: nowrap; }
+.doc__table td { color: var(--text-2); }
+.doc__table td:first-child { color: var(--text); }
+.doc__table td:last-child, .doc__table th:last-child { padding-right: 0; }
+.doc__table kbd + kbd { margin-left: 3px; }
+
+.doc__table + .doc__table { margin-top: 2em; }
+.doc__table + .prose { margin-top: 1.4em; }
+
+/* Contact */
+.doc__contact {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 28px; max-width: 70ch;
+  margin-top: 1.4em; padding: clamp(20px, 3vw, 28px); border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--hairline);
+}
+.doc__contact p { color: var(--text-2); max-width: 44ch; }
+.doc__contact p b { display: block; color: var(--text); font-weight: 650; overflow-wrap: anywhere; }
+
+/* ---------- 404 ---------- */
+.doc--404 { min-height: 100vh; min-height: 100svh; display: grid; grid-template-rows: 1fr auto; align-items: center; row-gap: 48px; padding-bottom: 32px; }
+.doc--404::before { height: 100%; background: radial-gradient(ellipse 50% 50% at 50% 42%, rgb(200 117 59 / 0.14), transparent 70%); }
+.doc--404 .doc__lost { display: grid; justify-items: center; gap: 22px; text-align: center; }
+.doc--404 .doc__code { font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.3em; padding-left: 0.3em; color: var(--text-2); }
+.doc--404 .string-mark { --string-w: min(440px, 72vw); }
+.doc--404 .string-mark::after { left: 104%; background: var(--text-2); box-shadow: none; animation: none; opacity: 0.7; }   /* the node has slipped off the end of the string */
+.doc--404 h1 { max-width: 14ch; }
+.doc--404 .lede { max-width: 44ch; }
+.doc--404 .cta-row { justify-content: center; margin-top: 6px; }
+.doc--404 .doc__legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px; font-size: 0.8125rem; color: var(--text-2); }
+
+@media (max-width: 560px) {
+  .doc__summary { padding: 20px 18px; }
+  .doc__steps > li { grid-template-columns: 34px minmax(0, 1fr); }
+  .doc__table td { font-size: 0.875rem; }
+  .doc__table th:first-child, .doc__table td:first-child { width: 7.2em; }
+  .doc__table th, .doc__table td { padding-right: 10px; }
+  .doc__contact .btn { width: 100%; }
+}

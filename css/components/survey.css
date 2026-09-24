@@ -1,0 +1,120 @@
+/* survey.css — the Survey view recreation (js/components/survey.js).
+   Sizes follow the app (SurveyMeterView: note 56 pt, cents 72 pt, word 28 pt) scaled by --u = width / 640. */
+
+.rc-survey { --sv-good: #5B9CFF; --sv-mild: #3ED6C9; /* Theme.Palette.surveyGood / surveyMild */ display: block; min-width: 0; font-family: var(--font-ui); font-variant-numeric: tabular-nums; }
+.rc-survey .rc-fallback { padding: 28px 8px; color: var(--text-2); font-size: 0.9375rem; line-height: 1.6; max-width: 56ch; margin-inline: auto; text-align: center; }
+
+.rc-survey .rc-survey__root { --u: 1; display: grid; gap: 14px; min-width: 0; }
+
+/* ---------- scenario switch ---------- */
+.rc-survey .rc-survey__switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; border-radius: var(--radius); background: var(--surface-2); border: 1px solid var(--hairline); }
+.rc-survey .rc-survey__seg { min-height: 40px; padding: 4px 8px; border-radius: 7px; font-size: 0.8125rem; font-weight: 600; line-height: 1.2; color: var(--text-2); text-align: center; text-wrap: balance; transition: background-color var(--t-state) var(--ease), color var(--t-state) var(--ease), box-shadow var(--t-state) var(--ease); }
+.rc-survey .rc-survey__seg:hover { color: var(--text); }
+.rc-survey .rc-survey__seg[aria-pressed="true"] { color: var(--text); background: rgb(79 163 255 / 0.2); box-shadow: inset 0 0 0 1px rgb(79 163 255 / 0.65); }
+.rc-survey .rc-survey__seg:focus-visible, .rc-survey .rc-survey__tab:focus-visible, .rc-survey .rc-survey__pause:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- stage: three views share one cell, cross-fade 200 ms (Theme.Motion) ---------- */
+.rc-survey .rc-survey__stage { display: grid; min-width: 0; }
+.rc-survey .rc-survey__view { grid-area: 1 / 1; min-width: 0; display: grid; align-content: center; gap: 10px; opacity: 0; visibility: hidden; transition: opacity var(--t-state) var(--ease), visibility 0s linear var(--t-state); }
+.rc-survey .rc-survey__view.is-on { opacity: 1; visibility: visible; transition: opacity var(--t-state) var(--ease), visibility 0s; }
+
+/* meter */
+.rc-survey .rc-survey__dial { aspect-ratio: 640 / 280; min-width: 0; }
+.rc-survey canvas { display: block; width: 100%; }
+.rc-survey .rc-survey__readout { display: flex; align-items: baseline; gap: calc(16px * var(--u)); line-height: 1; white-space: nowrap; min-width: 0; }
+.rc-survey .rc-survey__note { font-size: calc(56px * var(--u)); font-weight: 700; color: var(--text); min-width: 2.15em; }
+.rc-survey .rc-survey__cents { font-size: calc(72px * var(--u)); font-weight: 600; color: var(--text-2); min-width: 3.05em; }
+.rc-survey .rc-survey__word { font-size: max(11px, calc(28px * var(--u))); font-weight: 600; letter-spacing: 0.01em; }
+.rc-survey .rc-survey__cap { margin-left: auto; font-size: max(11px, calc(13px * var(--u))); color: var(--text-2); }
+.rc-survey .rc-survey__instr { font-size: 0.8125rem; line-height: 1.5; color: var(--text-2); }
+
+/* verdict (SurveyResultCard) */
+.rc-survey .rc-survey__view--verdict { display: flex; flex-direction: column; gap: 14px; padding: clamp(14px, 3vw, 22px); border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hairline); }
+.rc-survey .rc-survey__vbody { display: grid; gap: 12px; margin-block: auto; }
+.rc-survey .rc-survey__vtop { display: flex; justify-content: space-between; gap: 12px; font-size: 0.8125rem; color: var(--text-2); }
+.rc-survey .rc-survey__headline { font-size: clamp(1.1875rem, 0.9rem + 1.2vw, 1.375rem); font-weight: 650; line-height: 1.25; color: var(--text); text-wrap: balance; }
+.rc-survey .rc-survey__rec { font-size: 0.9375rem; line-height: 1.5; color: var(--text); }
+.rc-survey .rc-survey__warn { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; font-size: 0.8125rem; line-height: 1.5; color: var(--warn); }
+.rc-survey .rc-survey__warn svg { width: 16px; height: 16px; margin-top: 2px; }
+.rc-survey .rc-survey__explain { font-size: 0.8125rem; line-height: 1.55; color: var(--text-2); }
+.rc-survey .rc-survey__insp { margin-top: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-height: 46px; padding-top: 12px; border-top: 1px solid var(--hairline); font-size: 0.9375rem; line-height: 1.2; }
+.rc-survey .rc-survey__inote, .rc-survey .rc-survey__icents { font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); font-weight: 600; }
+.rc-survey .rc-survey__inote { color: var(--text); }
+.rc-survey .rc-survey__iword { color: var(--text-2); }
+.rc-survey .rc-survey__iuni { color: var(--warn); }
+.rc-survey .rc-survey__iuni.is-red { color: var(--sharp); }
+.rc-survey .rc-survey__iuni:empty, .rc-survey .rc-survey__icents:empty, .rc-survey .rc-survey__ihint:empty { display: none; }
+.rc-survey .rc-survey__insp:not(.has-key) > :not(.rc-survey__ihint) { display: none; }
+.rc-survey .rc-survey__ihint { font-size: 0.8125rem; color: var(--text-2); }
+
+/* coda: the overpull idea */
+.rc-survey .rc-survey__view--coda { gap: 12px; }
+.rc-survey .rc-survey__ctop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rc-survey .rc-survey__ctitle { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 12px; min-width: 0; }
+.rc-survey .rc-survey__cnote { font-size: 1.75rem; font-weight: 700; line-height: 1; color: var(--text); }
+.rc-survey .rc-survey__csub { font-size: 0.8125rem; color: var(--text-2); }
+.rc-survey .rc-survey__chip { display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 24px; padding: 2px 10px; border-radius: var(--radius-chip); background: rgb(255 180 84 / 0.14); color: var(--reference); font-size: 0.8125rem; font-weight: 550; white-space: nowrap; }
+.rc-survey .rc-survey__chip svg, .rc-survey .rc-survey__badge svg { width: 14px; height: 14px; flex: none; }
+/* StateBadge: fill 15 %, stroke 50 %; allowed to wrap on narrow columns */
+.rc-survey .rc-survey__badge { justify-self: start; display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 13px; font-size: 0.8125rem; font-weight: 550; line-height: 1.35; color: var(--reference); background: rgb(255 180 84 / 0.15); box-shadow: inset 0 0 0 1px rgb(255 180 84 / 0.5); }
+.rc-survey .rc-survey__badge--grey { color: var(--text-2); background: rgb(154 163 178 / 0.15); box-shadow: inset 0 0 0 1px rgb(154 163 178 / 0.5); }
+.rc-survey .rc-survey__badge--grey svg { display: none; }
+.rc-survey .rc-survey__diagram { border-radius: var(--radius); background: var(--surface); border: 1px solid var(--hairline); padding: 8px 0 4px; min-width: 0; }
+.rc-survey .rc-survey__status { display: grid; }
+.rc-survey .rc-survey__status p { grid-area: 1 / 1; font-size: 0.9375rem; line-height: 1.45; color: var(--text); opacity: 0; transition: opacity var(--t-state) var(--ease); }
+.rc-survey .rc-survey__status p.is-on { opacity: 1; }
+.rc-survey .rc-survey__nums { font-size: 0.8125rem; color: var(--text-2); }
+.rc-survey .rc-survey__nums sup { font-size: 0.7em; line-height: 0; }
+.rc-survey .rc-survey__bar-phi { display: inline-block; line-height: 0.92; border-top: 1px solid currentColor; }   /* Φ̄, the regional mean */
+.rc-survey .rc-survey__ccap { font-size: 0.8125rem; line-height: 1.5; color: var(--text-2); }
+
+/* ---------- keyboard map ---------- */
+.rc-survey .rc-survey__kb { position: relative; border-radius: 4px; cursor: crosshair; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.rc-survey .rc-survey__kb:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.rc-survey .rc-survey__tip { position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 2; display: inline-flex; align-items: center; gap: 7px; max-width: 100%; padding: 5px 10px; border-radius: var(--radius-chip); background: var(--surface-2); border: 1px solid rgb(232 234 240 / 0.22); box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.9); color: var(--text); font-size: 0.8125rem; font-weight: 550; line-height: 1.3; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; }
+.rc-survey .rc-survey__tip.is-on { opacity: 1; visibility: visible; }
+.rc-survey .rc-survey__root.is-verdict .rc-survey__tip { opacity: 0; visibility: hidden; }
+.rc-survey .rc-survey__tip i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+/* ---------- distribution + legend ---------- */
+.rc-survey .rc-survey__dist { display: flex; gap: 2px; height: 8px; margin-top: 2px; border-radius: 3px; background: rgb(232 234 240 / 0.05); }
+.rc-survey .rc-survey__d { flex: 0 1 0; min-width: 6px; border-radius: 3px; opacity: 0.85; }
+.rc-survey .rc-survey__d--good, .rc-survey .rc-survey__li--good i { background: var(--sv-good); }
+.rc-survey .rc-survey__d--little, .rc-survey .rc-survey__li--little i { background: var(--warn); }
+.rc-survey .rc-survey__d--far, .rc-survey .rc-survey__li--far i { background: var(--sharp); }
+.rc-survey .rc-survey__legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin-top: -6px; font-size: 0.8125rem; color: var(--text-2); }
+.rc-survey .rc-survey__li { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.rc-survey .rc-survey__li i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.rc-survey .rc-survey__li--uni i { width: 12px; height: 3px; border-radius: 1.5px; background: var(--sharp); }
+.rc-survey .rc-survey__avg { margin-left: auto; white-space: nowrap; }
+
+/* ---------- transport ---------- */
+.rc-survey .rc-survey__nav { display: flex; align-items: stretch; gap: 8px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+.rc-survey .rc-survey__pause { display: inline-flex; align-items: center; gap: 7px; min-width: 44px; min-height: 40px; padding: 0 12px 0 10px; border-radius: 8px; border: 1px solid var(--hairline); color: var(--text-2); font-size: 0.8125rem; font-weight: 600; transition: color var(--t-state) var(--ease), border-color var(--t-state) var(--ease); }
+.rc-survey .rc-survey__pause:hover { color: var(--text); border-color: rgb(232 234 240 / 0.3); }
+.rc-survey .rc-survey__pause svg { width: 14px; height: 14px; flex: none; color: var(--accent); }
+.rc-survey .rc-survey__pause .rc-survey__ico-play, .rc-survey .rc-survey__pause.is-paused .rc-survey__ico-pause { display: none; }
+.rc-survey .rc-survey__pause.is-paused .rc-survey__ico-play { display: inline; }
+.rc-survey .rc-survey__root.is-static .rc-survey__pause { display: none; }
+.rc-survey .rc-survey__tabs { flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; min-width: 0; }
+.rc-survey .rc-survey__tab { position: relative; display: flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 4px 6px; font-size: 0.8125rem; font-weight: 600; color: var(--text-2); text-align: left; overflow: hidden; transition: color var(--t-state) var(--ease); }
+.rc-survey .rc-survey__tab:hover:not(:disabled) { color: var(--text); }
+.rc-survey .rc-survey__tab[aria-current] { color: var(--text); }
+.rc-survey .rc-survey__tab:disabled { opacity: 0.4; cursor: default; }
+.rc-survey .rc-survey__tabn { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 400; color: var(--reference); }
+.rc-survey .rc-survey__tab::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 1px; background: rgb(232 234 240 / 0.12); }
+.rc-survey .rc-survey__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; height: 2px; border-radius: 1px; background: var(--reference); transform: scaleX(0); transform-origin: 0 50%; }
+
+@media (pointer: coarse) {
+  .rc-survey .rc-survey__seg, .rc-survey .rc-survey__tab, .rc-survey .rc-survey__pause { min-height: 44px; }
+}
+
+/* phones: keep the stage compact */
+.rc-survey .rc-survey__root { container-type: inline-size; }
+@container (max-width: 430px) {
+  .rc-survey .rc-survey__explain, .rc-survey .rc-survey__nums, .rc-survey .rc-survey__csub, .rc-survey .rc-survey__tabn { display: none; }
+  .rc-survey .rc-survey__pause span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .rc-survey .rc-survey__pause { justify-content: center; padding: 0; }
+  .rc-survey .rc-survey__insp { min-height: 72px; align-content: flex-start; }
+  .rc-survey .rc-survey__status p, .rc-survey .rc-survey__rec { font-size: 0.875rem; }
+}

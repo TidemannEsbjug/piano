@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <script src="js/gate.js"></script>
+  <noscript><style>body > :not(noscript) { display: none !important; } .gate-nojs { display: grid !important; place-items: center; min-height: 100vh; padding: 24px; text-align: center; color: #9AA3B2; font: 1rem ui-rounded, system-ui, sans-serif; }</style></noscript>
+  <title>Resonance Piano Tuner — tune your own piano</title>
+  <meta name="description" content="When a piano tuner isn't an option, tune your own piano with iPhone, iPad or Mac. Built on the science professional tuners work with, one string at a time.">
+  <meta name="theme-color" content="#0F1115">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/icon-32.png" type="image/png" sizes="32x32">   <!-- Safari ignores SVG favicons -->
+  <link rel="apple-touch-icon" href="assets/img/icon-180.png">
+  <link rel="canonical" href="https://resonancetuner.example/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Resonance Piano Tuner">
+  <meta property="og:title" content="Resonance Piano Tuner — tune your own piano">
+  <meta property="og:description" content="When a piano tuner isn't an option, tune your own piano, one string at a time. Built on the science professional tuners work with. For iPhone, iPad and Mac.">
+  <meta property="og:image" content="assets/img/film-poster.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Decide about the intro before first paint: once per tab session, never on deep links. ?intro=1 / ?intro=0 force it. -->
+  <script>
+    (function () {
+      var d = document.documentElement; d.classList.add('js');
+      // iPad reports itself as a Mac; touch tells them apart. Used to put the visitor's own store first.
+      var ua = navigator.userAgent || '', touch = navigator.maxTouchPoints > 1;
+      if (/iPhone|iPod|iPad/.test(ua) || (/Macintosh/.test(ua) && touch)) d.classList.add('is-ios');
+      else if (/Macintosh/.test(ua)) d.classList.add('is-mac');
+      var q = null, seen = false;
+      try { q = new URLSearchParams(location.search).get('intro'); } catch (e) {}
+      try { seen = sessionStorage.getItem('resonance.intro') === 'done'; } catch (e) {}
+      var on = q === '1' || (q !== '0' && !seen && !location.hash);
+      d.classList.add(on ? 'intro-on' : 'intro-off');
+      if (!on) {   // no loader: the film poster is the first big paint
+        var l = document.createElement('link'); l.rel = 'preload'; l.as = 'image'; l.href = 'assets/img/film-poster.webp'; l.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(l);
+      }
+    })();
+  </script>
+
+  <link rel="preload" href="assets/fonts/InstrumentSerif-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/img/intro-poster.webp" as="image" type="image/webp">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/intro.css">
+  <link rel="stylesheet" href="css/film.css">
+  <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/components/tuner.css">
+  <link rel="stylesheet" href="css/components/partials.css">
+  <link rel="stylesheet" href="css/components/wizard.css">
+  <link rel="stylesheet" href="css/components/curve.css">
+  <link rel="stylesheet" href="css/components/survey.css">
+  <link rel="stylesheet" href="css/components/unison.css">
+  <link rel="stylesheet" href="css/components/maths.css">
+  <noscript><style>.intro { display: none !important; } html.intro-on, html.intro-on body { overflow: auto !important; }</style></noscript>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Resonance Piano Tuner",
+    "applicationCategory": "MusicApplication",
+    "operatingSystem": "iOS 18.0 or later, iPadOS 18.0 or later, macOS 15.0 or later",
+    "softwareVersion": "1.0",
+    "description": "When a piano tuner isn't an option, tune your own piano with iPhone, iPad or Mac. Built on the science professional tuners work with, one string at a time.",
+    "installUrl": "https://apps.apple.com/us/app/resonance-piano-tuner/id6752103381",
+    "sameAs": ["https://apps.apple.com/us/app/resonance-piano-tuner/id6752103374?mt=12"]
+  }
+  </script>
+</head>
+<body>
+<script>window.ResonanceGate && ResonanceGate.mount();</script>
+<noscript><div class="gate-nojs" style="display:none">This private preview needs JavaScript to ask for its password.</div></noscript>
+
+<!-- ============ The loader: the app's launch intro, a bit quicker (js/intro.js) ============ -->
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="Resonance Piano Tuner intro" tabindex="-1">
+  <picture>
+    <source srcset="assets/img/intro-poster.webp" type="image/webp">
+    <img class="intro__poster" src="assets/img/intro-poster.jpg" alt="" width="1280" height="720" decoding="async" fetchpriority="high">
+  </picture>
+  <div class="intro__shade"></div>
+  <div class="intro__plate" aria-hidden="true">
+    <span class="intro__name">RESONANCE</span>
+    <span class="string-mark"></span>
+    <span class="intro__sub">PIANO TUNER</span>
+  </div>
+  <button class="intro__skip" type="button">Click or press Esc to skip</button>
+</div>
+<script src="js/intro.js" onerror="var c=document.documentElement.classList;c.remove('intro-on');c.add('intro-off')"></script>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div id="page">
+
+<header class="nav">
+  <div class="nav__inner">
+    <a class="wordmark" href="#top" aria-label="Resonance Piano Tuner — home">
+      <span class="wordmark__name">RESONANCE</span>
+      <span class="string-mark" aria-hidden="true"></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#film">The film</a>
+      <a href="#why">The science</a>
+      <a href="#how">How it works</a>
+      <a href="#maths">The maths</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn--solid btn--sm" href="#get" data-appstore="auto">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+        Get the app
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ Hero: headline + CTA, sitting directly on the film ============ -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="hero__bg" aria-hidden="true">
+      <picture>
+        <source srcset="assets/img/intro-poster.webp" type="image/webp">
+        <img src="assets/img/intro-poster.jpg" alt="" width="1280" height="720" decoding="async">
+      </picture>
+    </div>
+    <div class="container hero__inner">
+      <p class="eyebrow" data-enter style="--i:0">Piano tuning for iPhone, iPad and Mac</p>
+      <h1 id="hero-title" data-enter style="--i:1">Tune your <em>own</em> piano.</h1>
+      <p class="lede" data-enter style="--i:2">Nothing replaces a good piano tuner, but when one can't come, Resonance listens to your piano and shows you, one string at a time, which way to turn the pin, using the same science tuners work with.</p>
+      <div class="cta-row" data-enter style="--i:3" data-hero-cta>
+        <div class="store-badges">
+          <a class="appstore-badge appstore-badge--ios" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103381" data-appstore="ios" aria-label="Download Resonance for iPhone and iPad on the App Store">
+            <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">App Store</span></span>
+          </a>
+          <a class="appstore-badge appstore-badge--mac" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103374?mt=12" data-appstore="mac" aria-label="Download Resonance for Mac on the Mac App Store">
+            <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">Mac App Store</span></span>
+          </a>
+        </div>
+      </div>
+      <p class="cta-note" data-enter style="--i:4">iPhone and iPad with <b>iOS 18</b> · Mac with <b>macOS 15</b> · Grand or upright · Nothing leaves your device</p>
+    </div>
+  </section>
+
+  <!-- ============ The film: the centrepiece ============ -->
+  <section class="film" id="film" aria-labelledby="film-title">
+    <h2 class="visually-hidden" id="film-title">Resonance — the film</h2>
+    <div class="container container--wide">
+      <figure class="film-frame" data-film data-enter="fade" style="--i:5" aria-labelledby="film-title">
+        <svg class="film-frame__string" viewBox="0 0 1000 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="film-string-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="0">
+              <stop offset="0" stop-color="#FFB454" stop-opacity="0.05"/>
+              <stop offset="0.22" stop-color="#FFB454" stop-opacity="0.85"/>
+              <stop offset="0.5" stop-color="#4FA3FF"/>
+              <stop offset="0.78" stop-color="#FFB454" stop-opacity="0.85"/>
+              <stop offset="1" stop-color="#FFB454" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+          <path class="film-frame__string-glow" d="M0 12L1000 12"/>
+          <path d="M0 12L1000 12"/>
+        </svg>
+        <span class="film-frame__pin film-frame__pin--l" aria-hidden="true"></span>
+        <span class="film-frame__pin film-frame__pin--r" aria-hidden="true"></span>
+        <span class="film-frame__node" aria-hidden="true"></span>
+
+        <div class="film-frame__bezel">
+          <div class="film-frame__slot">
+            <div class="film-screen" data-film-screen>
+              <!-- Swap in the real film: explainer.mp4 + film-poster.webp (and .jpg, used for link previews) + the two .vtt files. See README.md.
+                   Native controls are the no-JS fallback; js/film.js removes them and takes over. -->
+              <video controls playsinline preload="metadata" poster="assets/img/film-poster.webp" aria-label="Resonance Piano Tuner — the explainer film">
+                <source src="assets/video/explainer.mp4" type="video/mp4">
+                <track kind="chapters" src="assets/video/explainer.chapters.vtt" srclang="en" label="Chapters">
+                <track kind="captions" src="assets/video/explainer.captions.vtt" srclang="en" label="English">
+              </video>
+
+              <button class="film-bigplay" type="button" data-film-bigplay aria-label="Play the film">
+                <span class="film-bigplay__disc" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.8v16.4L20.5 12z"/></svg></span>
+                <span class="film-bigplay__label">
+                  <span class="film-bigplay__title">Watch how it works</span>
+                  <span class="film-bigplay__meta">The film<span class="film-bigplay__dur" data-film-duration></span></span>
+                </span>
+              </button>
+
+              <div class="film-controls">
+                <button class="film-btn" type="button" data-film-toggle aria-label="Play">
+                  <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>
+                  <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z"/></svg>
+                </button>
+                <span class="film-time" data-film-time aria-hidden="true">0:00 / 0:00</span>
+                <div class="film-scrub">
+                  <div class="film-scrub__ticks" aria-hidden="true"></div>
+                  <input type="range" min="0" max="100" step="0.05" value="0" data-film-scrub aria-label="Seek">
+                </div>
+                <button class="film-btn" type="button" data-film-cc aria-label="Captions" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5h15A2.5 2.5 0 0 1 22 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 16.5v-9A2.5 2.5 0 0 1 4.5 5zm4.3 4.2c-1.7 0-2.9 1.2-2.9 2.8s1.2 2.8 2.9 2.8c1 0 1.8-.4 2.3-1.1l-1.1-.9c-.3.4-.7.6-1.2.6-.8 0-1.3-.6-1.3-1.4s.5-1.4 1.3-1.4c.5 0 .9.2 1.2.6l1.1-.9c-.5-.7-1.3-1.1-2.3-1.1zm6.6 0c-1.7 0-2.9 1.2-2.9 2.8s1.2 2.8 2.9 2.8c1 0 1.8-.4 2.3-1.1l-1.1-.9c-.3.4-.7.6-1.2.6-.8 0-1.3-.6-1.3-1.4s.5-1.4 1.3-1.4c.5 0 .9.2 1.2.6l1.1-.9c-.5-.7-1.3-1.1-2.3-1.1z" fill-rule="evenodd"/></svg>
+                </button>
+                <button class="film-btn" type="button" data-film-mute aria-label="Mute" aria-pressed="false">
+                  <svg class="i-vol" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.2v13.6l-4.8-4.3H4zM15 8.6a4.6 4.6 0 0 1 0 6.8l-1-1.1a3.1 3.1 0 0 0 0-4.6zm2.2-2.3a7.8 7.8 0 0 1 0 11.4l-1-1.1a6.3 6.3 0 0 0 0-9.2z"/></svg>
+                  <svg class="i-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.2v13.6l-4.8-4.3H4zM15.2 9.4l1.9 1.9 1.9-1.9 1.1 1.1-1.9 1.9 1.9 1.9-1.1 1.1-1.9-1.9-1.9 1.9-1.1-1.1 1.9-1.9-1.9-1.9z"/></svg>
+                </button>
+                <button class="film-btn" type="button" data-film-fs aria-label="Full screen">
+                  <svg class="i-fs" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v1.8H5.8V10H4zm10 0h6v6h-1.8V5.8H14zM4 14h1.8v4.2H10V20H4zm14.2 0H20v6h-6v-1.8h4.2z"/></svg>
+                  <svg class="i-exitfs" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 4H10v6H4V8.2h4.2zM14 4h1.8v4.2H20V10h-6zM4 14h6v6H8.2v-4.2H4zm10 0h6v1.8h-4.2V20H14z"/></svg>
+                </button>
+              </div>
+
+              <div class="film-end" data-film-end>
+                <p class="film-end__title">Now try it on <em>your</em> piano.</p>
+                <div class="film-end__row">
+                  <div class="store-badges">
+                    <a class="appstore-badge appstore-badge--ios appstore-badge--sm" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103381" data-appstore="ios" aria-label="Download Resonance for iPhone and iPad on the App Store">
+                      <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+                      <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">App Store</span></span>
+                    </a>
+                    <a class="appstore-badge appstore-badge--mac appstore-badge--sm" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103374?mt=12" data-appstore="mac" aria-label="Download Resonance for Mac on the Mac App Store">
+                      <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+                      <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">Mac App Store</span></span>
+                    </a>
+                  </div>
+                  <button class="btn" type="button" data-film-replay>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>
+                    Watch again
+                  </button>
+                </div>
+              </div>
+
+              <button class="film-dock-close" type="button" aria-label="Close the mini player">
+                <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="film-frame__plaque" aria-hidden="true">
+            <span><b>Resonance</b> — the film</span>
+            <span class="film-frame__now" data-film-now>Measure · Curve · Tune · Unisons</span>
+            <span class="num" data-film-duration></span>
+          </div>
+        </div>
+
+        <figcaption class="film-chapters">
+          <ol class="film-chapters__list" data-film-chapters aria-label="Chapters"></ol>
+        </figcaption>
+      </figure>
+
+      <div class="film-after">
+        <ul class="facts" aria-label="At a glance">
+          <li class="reveal" style="--i:0"><b>Never goes online.</b> Sound stays on your device</li>
+          <li class="reveal" style="--i:1"><b>iPhone, iPad</b> and Mac</li>
+          <li class="reveal" style="--i:2"><b>No account,</b> no cloud</li>
+          <li class="reveal" style="--i:3"><b>Grand or upright</b> · 88 or 85 keys</li>
+          <li class="reveal" style="--i:4"><b>Felt strip</b> or wedges</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Why: inharmonicity ============ -->
+  <section class="section" id="why" aria-labelledby="why-title">
+    <div class="glow" style="left:-20vw; top:10%" aria-hidden="true"></div>
+    <div class="container">
+      <div class="split">
+        <div class="split__copy">
+          <p class="eyebrow reveal">The science</p>
+          <h2 id="why-title" class="reveal" style="--i:1">Why an ordinary tuner app <em>gets a piano wrong</em>.</h2>
+          <p class="lede reveal" style="--i:2">Piano strings are thick, stiff steel. The stiffness makes their overtones ring a little sharp: more at the top of the keyboard, and by a different amount on every piano.</p>
+          <div class="prose reveal" style="--i:3">
+            <p>Tune every note to the textbook and the octaves beat against each other: you hear a slow <strong>wobble</strong> where there should be none. Professional tuners know this. They stretch the octaves until they sound clean, by ear or with tuning software. An ordinary tuner app can't, because it assumes a perfect string.</p>
+            <p>Resonance works from the same science. It measures how stiff your strings are (one number per note, called <em>B</em>) and works out the stretch from that.</p>
+          </div>
+          <div class="equation reveal" style="--i:4" role="group" aria-label="The inharmonic string model">
+            <math display="block" xmlns="http://www.w3.org/1998/Math/MathML" aria-label="p sub n equals n times F times the square root of 1 plus B n squared">
+              <msub><mi>p</mi><mi>n</mi></msub><mo>=</mo><mi>n</mi><mo>&#x2062;</mo><mi>F</mi><mo>&#x2062;</mo>
+              <msqrt><mn>1</mn><mo>+</mo><mi>B</mi><mo>&#x2062;</mo><msup><mi>n</mi><mn>2</mn></msup></msqrt>
+            </math>
+            <p class="equation__note">Overtone <i>n</i> of a stiff string. With <i>B</i>&nbsp;=&nbsp;0 you get the textbook. A typical middle C is near 4&nbsp;×&nbsp;10⁻⁴, which puts its eighth overtone about 21&nbsp;cents sharp.</p>
+          </div>
+          <a class="watch-part reveal" style="--i:5" href="#film" data-film-chapter="why">Watch this part <span class="num" data-film-at></span></a>
+        </div>
+        <div class="feature__visual reveal reveal--fade" style="--i:2">
+          <div data-component="partials" class="rc-partials" role="group" aria-label="Interactive: how inharmonicity moves a string's partials">
+            <p class="rc-fallback">An interactive diagram compares the harmonic ladder of an ideal string with the partials of a real, stiff piano string, showing each partial's offset in cents.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ How: the order of work ============ -->
+  <section class="section section--tight" id="how" aria-labelledby="how-title">
+    <div class="container">
+      <header class="section__head">
+        <p class="eyebrow reveal">How it works</p>
+        <h2 id="how-title" class="reveal" style="--i:1">A whole tuning, <em>step by step</em>.</h2>
+        <p class="lede reveal" style="--i:2">You don't need to know how to tune. You need a tuning lever, a few mutes and some patience. The app gives you one step at a time, in plain words: which key, which string, which way to turn.</p>
+      </header>
+      <ol class="steps">
+        <li class="step reveal" style="--i:0"><h3>Set up</h3><p>Tell it about your piano: grand or upright, and where the notes change from one string to two, and from two to three. Check that the microphone can hear it.</p></li>
+        <li class="step reveal" style="--i:1"><h3>Survey</h3><p>Play every key, about a second each. You'll see how far out the piano is, and what to do about it.</p></li>
+        <li class="step reveal" style="--i:2"><h3>Pitch raise</h3><p>Only if the piano is well below pitch. A quick rough pass that pulls each note a little too high on purpose, so it settles where it should.</p></li>
+        <li class="step reveal" style="--i:3"><h3>Measure</h3><p>Play a handful of notes the app picks. It shows which strings to mute, listens, and asks for a second strike to be sure.</p></li>
+        <li class="step reveal" style="--i:4"><h3>Curve</h3><p>From those notes it works out the right pitch for all 88 keys, and tells you when it has heard enough.</p></li>
+        <li class="step reveal" style="--i:5"><h3>Tune</h3><p>One note at a time. Tune one string until the needle turns green, then bring the note's other strings in line until the wobble stops.</p></li>
+        <li class="step reveal" style="--i:6"><h3>Unisons</h3><p>Come back to any note whose strings have drifted apart. It shows how fast they wobble and which way to turn.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ iPhone · iPad · Mac ============ -->
+  <section class="section" id="devices" data-nav="how" aria-labelledby="devices-title">
+    <div class="glow" style="right:-22vw; top:8%" aria-hidden="true"></div>
+    <div class="container">
+      <div class="split split--flip">
+        <div class="split__copy">
+          <p class="eyebrow reveal">iPhone · iPad · Mac</p>
+          <h2 id="devices-title" class="reveal" style="--i:1">Stand it on <em>the music desk</em>.</h2>
+          <p class="lede reveal" style="--i:2">The same app on iPhone, iPad and Mac. Everything you need to tune a piano fits on your phone, so you can prop it on the music desk and keep your hands free for the lever and the keys.</p>
+          <ul class="devices__list reveal" style="--i:3">
+            <li><span class="devices__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 5h3"/></svg></span><span><b>iPhone</b>The whole tuning, start to finish: setup, the survey, a pitch raise, measuring, and every note and unison. Laid out for the phone, with a note name and needle you can read from the bench.</span></li>
+            <li><span class="devices__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="2.5" width="17" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span><span><b>iPad</b>The same app with more room. The list of steps stays beside the one you're on, upright or sideways.</span></li>
+            <li><span class="devices__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="11" rx="1.5"/><path d="M2 18.5h20"/></svg></span><span><b>Mac</b>Everything the iPhone does, plus the curve charts, the unison numbers, the strobe and one-key shortcuts.</span></li>
+          </ul>
+          <p class="devices__note reveal" style="--i:4">Each device keeps its own sessions. Nothing syncs, because nothing leaves the device.</p>
+        </div>
+        <div class="devices__visual reveal reveal--fade" style="--i:2">
+          <div class="phone">
+            <div class="phone__screen">
+              <span class="phone__island" aria-hidden="true"></span>
+              <div class="phone__status" aria-hidden="true">
+                <span>9:41</span>
+                <span><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2.5" y="2.5" width="16" height="7" rx="2"/><rect x="24" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span>
+              </div>
+              <div class="phone__nav" aria-hidden="true"><i></i><span>Tune</span><span></span></div>
+              <div class="phone__content">
+                <div data-component="tuner" data-phone class="rc-tuner" role="group" aria-label="Live demo of the Tune view at iPhone size: note, needle, step-by-step guide and keyboard">
+                  <p class="rc-fallback">A live copy of the Tune view at iPhone size: the note name and how far off it is, the needle, and a guide that gives one step at a time in plain words.</p>
+                </div>
+              </div>
+              <span class="phone__home" aria-hidden="true"></span>
+            </div>
+          </div>
+          <p class="panel__caption">The Tune view at iPhone size: a live copy on made-up values.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Tune ============ -->
+  <section class="section" id="tune" data-nav="how" aria-labelledby="tune-title">
+    <div class="strings-bg" aria-hidden="true"></div>
+    <div class="container container--wide">
+      <header class="section__head section__head--center">
+        <p class="eyebrow eyebrow--plain reveal">Tune</p>
+        <h2 id="tune-title" class="reveal" style="--i:1"><span class="nowrap">One note.</span> <span class="nowrap">One step.</span> <em class="nowrap">Plain words.</em></h2>
+        <p class="lede reveal" style="--i:2">Resonance tells you the one thing to do next, and moves on when it hears you've done it. Your hands stay on the lever.</p>
+        <a class="watch-part reveal" style="--i:3" href="#film" data-film-chapter="tune">Watch this part <span class="num" data-film-at></span></a>
+      </header>
+      <div class="panel reveal reveal--fade">
+        <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Tune</span></div>
+        <div data-component="tuner" class="rc-tuner" role="group" aria-label="Live demo of the Tune view: note readout, needle, step-by-step guide and keyboard, with an Advanced mode switch">
+          <p class="rc-fallback">A live copy of the Tune view. On the left, the note name, how far off it is in cents, and a needle. On the right, a guide that gives one step at a time in plain words: put the mutes in, tune the middle string, match the left string, match the right string. Below, an 88-key keyboard shows which notes are done. An Advanced mode switch adds the strobe, the spectrum and the numbers.</p>
+        </div>
+      </div>
+      <p class="panel__caption">A live copy of the Tune view on made-up values, as it looks on the Mac and on a wide iPad. Turn the pin yourself, or switch on Advanced mode.</p>
+      <ul class="feature__list container--narrow container reveal" style="margin-top: clamp(32px, 5vw, 56px); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); column-gap: 40px;">
+        <li><b>Put the mutes in.</b> A picture shows which strings to mute. Play the note and it moves on by itself.</li>
+        <li><b>Tune the middle string.</b> Turn the pin a tiny bit at a time until the needle sits in the middle and turns green. It records by itself.</li>
+        <li><b>Match the left string, then the right.</b> Take out one mute and you'll hear a slow wobble. Turn the pin until it's gone.</li>
+        <li><b>Easy to read from the bench.</b> A huge note name, and a word with every colour: FLAT, SHARP, IN TUNE.</li>
+        <li><b>It listens to the right overtone</b> for each part of the keyboard, and stays on your note even when a string is way off.</li>
+        <li><b>Want the numbers?</b> Advanced mode adds the spectrum. On the Mac it also adds a strobe for the last tenth of a cent, and the tuning plan.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Measure ============ -->
+  <section class="section" id="measure" data-nav="how" aria-labelledby="measure-title">
+    <div class="container">
+      <div class="feature split split--flip">
+        <div class="split__copy">
+          <p class="eyebrow reveal">Measure</p>
+          <h2 id="measure-title" class="reveal" style="--i:1">It tells you <em>which string</em>. Then it listens.</h2>
+          <p class="lede reveal" style="--i:2">For every note it shows which strings to mute and which one to leave open. Wedges or a felt strip, grand or upright.</p>
+          <ul class="feature__list reveal" style="--i:3">
+            <li><b>Hands-free.</b> Mute, strike, hold. It listens, checks the note and moves on by itself.</li>
+            <li><b>Two strikes must agree</b> before a measurement counts.</li>
+            <li><b>One clear reason</b> when a strike is no good: too loud, too quiet, died too soon&nbsp;— or the wrong key: <q>That sounded like B2, not C3. C3 is one white key to the right.</q></li>
+            <li><b>It picks the next note for you:</b> the one that helps the most.</li>
+          </ul>
+          <a class="watch-part reveal" style="--i:4" href="#film" data-film-chapter="measure">Watch this part <span class="num" data-film-at></span></a>
+        </div>
+        <div class="feature__visual reveal reveal--fade" style="--i:2">
+          <div class="panel">
+            <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Measure</span></div>
+            <div data-component="wizard" class="rc-wizard" role="group" aria-label="Live demo of the measurement wizard: mute diagram, strike ring and quality bar">
+              <p class="rc-fallback">A live recreation of the measurement wizard: a diagram of a three-string note with wedges muting the left and right strings and the middle string open as the reference, a ring that fills while the app listens to a strike, and a quality bar built from the number of partials found, the fit error, the signal-to-noise ratio and consistency.</p>
+            </div>
+          </div>
+          <p class="panel__caption">A live copy of the measuring step, faster than real life, on made-up values.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Curve ============ -->
+  <section class="section" id="curve" data-nav="how" aria-labelledby="curve-title">
+    <div class="glow" style="right:-25vw; top:0" aria-hidden="true"></div>
+    <div class="container">
+      <div class="feature split">
+        <div class="split__copy">
+          <p class="eyebrow reveal">Curve</p>
+          <h2 id="curve-title" class="reveal" style="--i:1">A stretch curve <em>from your strings</em>, not from a table.</h2>
+          <p class="lede reveal" style="--i:2">This is the stretch a good tuner builds by ear, worked out from your measurements instead. All 88 notes are solved together, so the octaves sound as clean as your strings allow, from the bottom of the keyboard to the top.</p>
+          <ul class="feature__list reveal" style="--i:3">
+            <li><b>It says when it's ready.</b> <span class="chip chip--blue">curve reliable (0.7¢)</span> means: more measuring could still move a note by up to 0.7 cents.</li>
+            <li><b>Start with about nine notes.</b> It usually asks for a few more.</li>
+            <li><b>It keeps learning while you tune</b>, and notes you've already tuned stay put.</li>
+            <li><b>Five stretch styles</b>, from Light to Pure twelfths, if you have a preference.</li>
+          </ul>
+          <a class="watch-part reveal" style="--i:4" href="#film" data-film-chapter="curve">Watch this part <span class="num" data-film-at></span></a>
+        </div>
+        <div class="feature__visual reveal reveal--fade" style="--i:2">
+          <div class="panel">
+            <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Curve</span></div>
+            <div data-component="curve" class="rc-curve" role="group" aria-label="Live demo of the Curve view: the stretch curve and the inharmonicity of each key">
+              <p class="rc-fallback">Two charts. The stretch curve shows each key's target in cents relative to equal temperament, from about 20 cents flat at the lowest A to about 23 cents sharp at the top C, inside a band showing the remaining uncertainty. The second chart shows the inharmonicity of each key on a logarithmic axis, with the measured notes marked and a step where the copper-wound bass strings give way to plain steel.</p>
+            </div>
+          </div>
+          <p class="panel__caption">A live copy of the Curve view on the Mac. Made-up data: a grand with fourteen measured notes. iPhone and iPad tune to the same curve.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Survey & pitch raise ============ -->
+  <section class="section" id="survey" data-nav="how" aria-labelledby="survey-title">
+    <div class="container">
+      <div class="feature split split--flip">
+        <div class="split__copy">
+          <p class="eyebrow reveal">Survey &amp; pitch raise</p>
+          <h2 id="survey-title" class="reveal" style="--i:1">Far from pitch? <em>Start there.</em></h2>
+          <p class="lede reveal" style="--i:2">Pull a very flat piano straight up to pitch and it sinks back behind you. So Resonance checks the whole keyboard first and tells you what the piano needs.</p>
+          <ul class="feature__list reveal" style="--i:3">
+            <li><b>A plain answer</b>: <q>Your piano is close to pitch.</q> Or: <q>Your piano needs a pitch raise first.</q></li>
+            <li><b>It aims a little sharp, on purpose.</b> <q>Aiming +8.3¢ sharp on purpose&nbsp;— the string will settle.</q></li>
+            <li><b>It goes gently.</b> Never more than 30&nbsp;cents sharp, or 15 on the copper-wound strings. Two passes if the piano is very flat.</li>
+            <li><b>It spots notes whose strings disagree</b> while you play through.</li>
+          </ul>
+        </div>
+        <div class="feature__visual reveal reveal--fade" style="--i:2">
+          <div class="panel">
+            <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Survey</span></div>
+            <div data-component="survey" class="rc-survey" role="group" aria-label="Live demo of the Survey view: the survey meter and the keyboard filling in">
+              <p class="rc-fallback">A live recreation of the Survey view: a wide meter showing how far each key is from pitch, up to 100 cents either way, and a keyboard that fills in key by key, tinted from blue for close to pitch through amber to red for far off, ending in a verdict.</p>
+            </div>
+          </div>
+          <p class="panel__caption">A live copy of the Survey view, faster than real life, on made-up values.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Unison ============ -->
+  <section class="section" id="unison" data-nav="how" aria-labelledby="unison-title">
+    <div class="container">
+      <div class="feature split">
+        <div class="split__copy">
+          <p class="eyebrow reveal">Unisons</p>
+          <h2 id="unison-title" class="reveal" style="--i:1">Then pull the unisons <em>clean</em>.</h2>
+          <p class="lede reveal" style="--i:2">Most notes have two or three strings. When they disagree you hear a slow wobble. Resonance hears it too, and tells you which way to turn.</p>
+          <ul class="feature__list reveal" style="--i:3">
+            <li><b>Which way to turn</b>: <q>Turn it up a little</q> or <q>Turn it down a little</q>.</li>
+            <li><b>How fast the wobble is</b>, so you can see it slow down as you get close.</li>
+            <li><b>It tells you when it is gone</b>: <q>No wobble&nbsp;— this string matches.</q></li>
+            <li><b>On the Mac, Advanced mode</b> adds the numbers: beats per second, the gap in cents, and a lamp that turns green when the unison is clean.</li>
+          </ul>
+          <a class="watch-part reveal" style="--i:4" href="#film" data-film-chapter="unisons">Watch this part <span class="num" data-film-at></span></a>
+        </div>
+        <div class="feature__visual reveal reveal--fade" style="--i:2">
+          <div class="panel">
+            <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Unison</span></div>
+            <div data-component="unison" class="rc-unison" role="group" aria-label="Live demo of the Unison panel: two strings beating, the beat rate and the clean lamp">
+              <p class="rc-fallback">A live recreation of the Unison panel: two strings sounding together, their combined loudness swelling and fading as they beat, a large beat-rate readout in hertz, a direction such as LOWER the open string, and a lamp that turns green when the unison is clean.</p>
+            </div>
+          </div>
+          <p class="panel__caption">A live copy of the Unison panel on the Mac (Advanced mode), on made-up values. Turn the pin to stop the wobble.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ The maths ============ -->
+  <section class="section" id="maths" aria-labelledby="maths-title">
+    <div class="strings-bg" aria-hidden="true" style="transform: scaleX(-1)"></div>
+    <div class="container">
+      <header class="section__head">
+        <p class="eyebrow reveal">The maths</p>
+        <h2 id="maths-title" class="reveal" style="--i:1">Show me <em>the equations</em>.</h2>
+        <p class="lede reveal" style="--i:2">You don't need any of this to tune. But it's the physics professional tuning software is built on, and nothing in Resonance is a black box. Here it is, in the order the app uses it.</p>
+      </header>
+      <!-- MATHS:START (inlined from _fragments/maths.html by _dev/inline-fragments.py) -->
+      <div class="rc-maths">
+        <ol class="rc-maths__grid" role="list">
+
+          <!-- 01 · Cents (E1) -->
+          <li class="rc-maths__card rc-maths__card--5 reveal" style="--i:0">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">01</span>
+              <h3 class="rc-maths__title">Cents: the one unit</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Everywhere</span>
+            </header>
+            <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 1, cents">
+              <div class="rc-maths__lines">
+                <math display="block" aria-label="c of f and g equals 1200 times the base 2 logarithm of f over g">
+                  <mi>c</mi><mo stretchy="false">(</mo><mi>f</mi><mo>,</mo><mi>g</mi><mo stretchy="false">)</mo>
+                  <mo>=</mo>
+                  <mn>1200</mn><mo>&#x22C5;</mo>
+                  <msub><mi>log</mi><mn>2</mn></msub><mo>&#x2061;</mo>
+                  <mrow><mo>(</mo><mfrac><mi>f</mi><mi>g</mi></mfrac><mo>)</mo></mrow>
+                </math>
+              </div>
+            </div>
+            <p class="rc-maths__meaning">The distance between two frequencies <math><mi>f</mi></math> and <math><mi>g</mi></math>, in cents: 100 to a semitone, 1200 to an octave. The needle, the curve and the error of every fit are all in this unit. At A4, one cent is only 0.254&nbsp;Hz.</p>
+          </li>
+
+          <!-- 02 · Stiff string (E2) -->
+          <li class="rc-maths__card rc-maths__card--7 reveal" style="--i:1">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">02</span>
+              <h3 class="rc-maths__title">A stiff string&rsquo;s overtones</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Measure</span>
+            </header>
+            <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 2, the stiff-string model">
+              <div class="rc-maths__lines">
+                <div class="rc-maths__row rc-maths__row--wrap">
+                  <math display="block" aria-label="p sub n equals n times F times the square root of 1 plus B n squared">
+                    <msub><mi>p</mi><mi>n</mi></msub>
+                    <mo>=</mo>
+                    <mi>n</mi><mo>&#x22C5;</mo><mi>F</mi><mo>&#x22C5;</mo>
+                    <msqrt><mn>1</mn><mo>+</mo><mi class="rc-maths__hl">B</mi><mo>&#x2062;</mo><msup><mi>n</mi><mn>2</mn></msup></msqrt>
+                  </math>
+                  <math display="block" aria-label="f sub 1 equals F times the square root of 1 plus B">
+                    <msub><mi>f</mi><mn>1</mn></msub>
+                    <mo>=</mo>
+                    <mi>F</mi><mo>&#x22C5;</mo>
+                    <msqrt><mn>1</mn><mo>+</mo><mi class="rc-maths__hl">B</mi></msqrt>
+                  </math>
+                </div>
+                <div class="rc-maths__row rc-maths__row--wrap">
+                  <math display="block" aria-label="R sub n of B equals the square root of the fraction 1 plus B n squared over 1 plus B">
+                    <msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">(</mo><mi>B</mi><mo stretchy="false">)</mo>
+                    <mo>=</mo>
+                    <msqrt><mfrac><mrow><mn>1</mn><mo>+</mo><mi>B</mi><mo>&#x2062;</mo><msup><mi>n</mi><mn>2</mn></msup></mrow><mrow><mn>1</mn><mo>+</mo><mi>B</mi></mrow></mfrac></msqrt>
+                  </math>
+                  <math display="block" aria-label="so p sub n equals f sub 1 times n times R sub n of B">
+                    <msub><mi>p</mi><mi>n</mi></msub>
+                    <mo>=</mo>
+                    <msub><mi>f</mi><mn>1</mn></msub><mo>&#x22C5;</mo><mi>n</mi><mo>&#x22C5;</mo>
+                    <msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">(</mo><mi>B</mi><mo stretchy="false">)</mo>
+                  </math>
+                </div>
+              </div>
+            </div>
+            <p class="rc-maths__meaning">Piano wire is stiff steel, so overtone <math><mi>n</mi></math> is not exactly <math><mi>n</mi></math> times the fundamental: it runs sharp, by an amount that grows with <math><msup><mi>n</mi><mn>2</mn></msup></math>. One number per string, the inharmonicity <math><mi class="rc-maths__hl">B</mi></math>, describes the whole series. <strong>Everything you see is anchored on the real first partial <math><msub><mi>f</mi><mn>1</mn></msub></math></strong>: &ldquo;A4 = 440&rdquo; means <math><msub><mi>f</mi><mn>1</mn></msub></math>, never the zero-stiffness <math><mi>F</mi></math>, and <math><msub><mi>R</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></math>.</p>
+          </li>
+
+          <!-- 03 · Fine frequency + strobe (E3) -->
+          <li class="rc-maths__card rc-maths__card--7 reveal" style="--i:0">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">03</span>
+              <h3 class="rc-maths__title">Frequency from phase, and the strobe</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Measure · Tune</span>
+            </header>
+            <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 3, the fine frequency estimate and the strobe phase">
+              <div class="rc-maths__lines">
+                <div class="rc-maths__line">
+                  <span class="rc-maths__cap">Project short Hann-windowed blocks onto the guess</span>
+                  <math display="block" class="rc-maths__sm" aria-label="Z sub m equals the sum, for i from 0 to N sub b minus 1, of w of i, times x of m H plus i, times e to the minus j 2 pi f hat times m H plus i over f sub s">
+                    <msub><mi>Z</mi><mi>m</mi></msub>
+                    <mo>=</mo>
+                    <munderover><mo>&#x2211;</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mrow><msub><mi>N</mi><mi>b</mi></msub><mo>&#x2212;</mo><mn>1</mn></mrow></munderover>
+                    <mi>w</mi><mo stretchy="false">[</mo><mi>i</mi><mo stretchy="false">]</mo>
+                    <mspace width="0.25em"></mspace>
+                    <mi>x</mi><mo stretchy="false">[</mo><mi>m</mi><mi>H</mi><mo>+</mo><mi>i</mi><mo stretchy="false">]</mo>
+                    <mspace width="0.25em"></mspace>
+                    <msup><mi>e</mi><mrow><mo>&#x2212;</mo><mi>j</mi><mn>2</mn><mi>&#x3C0;</mi><mspace width="0.12em"></mspace><mover accent="true"><mi>f</mi><mo>^</mo></mover><mspace width="0.12em"></mspace><mo stretchy="false">(</mo><mi>m</mi><mi>H</mi><mo>+</mo><mi>i</mi><mo stretchy="false">)</mo><mo>/</mo><msub><mi>f</mi><mi>s</mi></msub></mrow></msup>
+                  </math>
+                </div>
+                <div class="rc-maths__line">
+                  <span class="rc-maths__cap">The slope of the unwrapped phase is the error</span>
+                  <div class="rc-maths__row rc-maths__row--wrap">
+                    <math display="block" aria-label="phi sub m, the unwrapped argument of Z sub m, is approximately phi sub 0 plus 2 pi times delta f times t sub m">
+                      <msub><mi>&#x3C6;</mi><mi>m</mi></msub>
+                      <mo>=</mo>
+                      <mi>unwrap</mi><mo>&#x2061;</mo><mo stretchy="false">(</mo><mi>arg</mi><mo>&#x2061;</mo><mspace width="0.17em"></mspace><msub><mi>Z</mi><mi>m</mi></msub><mo stretchy="false">)</mo>
+                      <mo>&#x2248;</mo>
+                      <msub><mi>&#x3C6;</mi><mn>0</mn></msub><mo>+</mo><mn>2</mn><mi>&#x3C0;</mi><mo>&#x22C5;</mo><mrow class="rc-maths__hl"><mi>&#x3B4;</mi><mi>f</mi></mrow><mo>&#x22C5;</mo><msub><mi>t</mi><mi>m</mi></msub>
+                    </math>
+                    <math display="block" aria-label="f equals f hat plus delta f">
+                      <mi>f</mi><mo>=</mo><mover accent="true"><mi>f</mi><mo>^</mo></mover><mo>+</mo><mrow class="rc-maths__hl"><mi>&#x3B4;</mi><mi>f</mi></mrow>
+                    </math>
+                  </div>
+                </div>
+                <div class="rc-maths__line">
+                  <span class="rc-maths__cap">The strobe draws the same phase between frames</span>
+                  <math display="block" aria-label="phi of t equals phi sub 0 plus 2 pi times Delta f times t minus t sub 0">
+                    <mi>&#x3C6;</mi><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo>
+                    <mo>=</mo>
+                    <msub><mi>&#x3C6;</mi><mn>0</mn></msub><mo>+</mo><mn>2</mn><mi>&#x3C0;</mi><mo>&#x22C5;</mo><mrow><mi mathvariant="normal">&#x394;</mi><mi>f</mi></mrow><mo>&#x22C5;</mo>
+                    <mo stretchy="false">(</mo><mi>t</mi><mo>&#x2212;</mo><msub><mi>t</mi><mn>0</mn></msub><mo stretchy="false">)</mo>
+                  </math>
+                </div>
+              </div>
+            </div>
+            <p class="rc-maths__meaning">An FFT bin is far too coarse. So the app mixes the sound down against its best guess <math><mover accent="true"><mi>f</mi><mo>^</mo></mover></math> and watches how fast the phase of the result turns: standing still means exactly on the guess, a slow rotation <em>is</em> the pitch error. The fit is a straight line through phase against time, weighted by <math><msup><mrow><mo stretchy="false">|</mo><msub><mi>Z</mi><mi>m</mi></msub><mo stretchy="false">|</mo></mrow><mn>2</mn></msup></math>. In the strobe, <math><mrow><mi mathvariant="normal">&#x394;</mi><mi>f</mi></mrow></math> is the measured partial minus its target, so the band drifts at exactly that many periods per second, and only within &plusmn;15&nbsp;cents.</p>
+          </li>
+
+          <!-- 04 · Per-strike fit (E4) -->
+          <li class="rc-maths__card rc-maths__card--5 reveal" style="--i:1">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">04</span>
+              <h3 class="rc-maths__title">One strike, one straight line</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Measure</span>
+            </header>
+            <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 4, the per-strike inharmonicity fit">
+              <div class="rc-maths__lines">
+                <div class="rc-maths__row rc-maths__row--wrap">
+                <math display="block" aria-label="the square of f sub n over n equals F squared times 1 plus B n squared">
+                  <msup><mrow><mo>(</mo><mfrac><msub><mi>f</mi><mi>n</mi></msub><mi>n</mi></mfrac><mo>)</mo></mrow><mn>2</mn></msup>
+                  <mo>=</mo>
+                  <msup><mi>F</mi><mn>2</mn></msup><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>B</mi><mo>&#x2062;</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">)</mo>
+                </math>
+                <math display="block" aria-label="which is a straight line in n squared: a plus b times n squared">
+                  <mo form="prefix">=</mo>
+                  <mspace width="0.28em"></mspace>
+                  <mi>a</mi><mo>+</mo><mi>b</mi><mo>&#x22C5;</mo><msup><mi>n</mi><mn>2</mn></msup>
+                </math>
+                </div>
+                <div class="rc-maths__row rc-maths__row--wrap">
+                  <math display="block" aria-label="F equals the square root of a">
+                    <mi>F</mi><mo>=</mo><msqrt><mi>a</mi></msqrt>
+                  </math>
+                  <math display="block" aria-label="B equals b over a">
+                    <mi class="rc-maths__hl">B</mi><mo>=</mo><mfrac><mi>b</mi><mi>a</mi></mfrac>
+                  </math>
+                </div>
+                <div class="rc-maths__line">
+                  <span class="rc-maths__cap">Then refined on the residuals, in cents</span>
+                  <math display="block" class="rc-maths__sm" aria-label="r sub n equals c of f sub n and n times F times the square root of 1 plus B n squared">
+                    <msub><mi>r</mi><mi>n</mi></msub>
+                    <mo>=</mo>
+                    <mi>c</mi><mo stretchy="false">(</mo><msub><mi>f</mi><mi>n</mi></msub><mo>,</mo>
+                    <mspace width="0.2em"></mspace>
+                    <mi>n</mi><mo>&#x22C5;</mo><mi>F</mi><mo>&#x22C5;</mo><msqrt><mn>1</mn><mo>+</mo><mi>B</mi><mo>&#x2062;</mo><msup><mi>n</mi><mn>2</mn></msup></msqrt>
+                    <mo stretchy="false">)</mo>
+                  </math>
+                </div>
+              </div>
+            </div>
+            <p class="rc-maths__meaning">Play one note. The app finds up to twelve overtones <math><msub><mi>f</mi><mi>n</mi></msub></math>, measures each with step&nbsp;03, and plots <math><msup><mrow><mo stretchy="false">(</mo><msub><mi>f</mi><mi>n</mi></msub><mo>/</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><mn>2</mn></msup></math> against <math><msup><mi>n</mi><mn>2</mn></msup></math>: a straight line whose intercept gives <math><mi>F</mi></math> and whose slope over intercept is <math><mi class="rc-maths__hl">B</mi></math>. A weighted least-squares fit, then a few Gauss&ndash;Newton steps on the cents residuals; partials that miss by more than about 1.5&nbsp;cents are dropped.</p>
+          </li>
+
+          <!-- 05 · The solver (E6) -->
+          <li class="rc-maths__card rc-maths__card--12 reveal" style="--i:0">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">05</span>
+              <h3 class="rc-maths__title">The stretch curve: every interval at once</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Curve</span>
+            </header>
+            <div class="rc-maths__body rc-maths__body--split">
+              <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 5, the interval equation and the solver's objective">
+                <div class="rc-maths__lines">
+                  <div class="rc-maths__line">
+                    <span class="rc-maths__cap">One equation per pair of partials that should meet (m of key i, n of key j)</span>
+                    <math display="block" aria-label="x sub j minus x sub i equals 1200 times the base 2 logarithm of R sub m of B sub i over R sub n of B sub j, plus epsilon">
+                      <msub><mi class="rc-maths__hl">x</mi><mi>j</mi></msub><mo>&#x2212;</mo><msub><mi class="rc-maths__hl">x</mi><mi>i</mi></msub>
+                      <mo>=</mo>
+                      <mn>1200</mn><mo>&#x22C5;</mo><msub><mi>log</mi><mn>2</mn></msub><mo>&#x2061;</mo>
+                      <mrow><mo>(</mo><mfrac>
+                        <mrow><msub><mi>R</mi><mi>m</mi></msub><mo stretchy="false">(</mo><msub><mi>B</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow>
+                        <mrow><msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">(</mo><msub><mi>B</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow>
+                      </mfrac><mo>)</mo></mrow>
+                      <mo>+</mo><mi>&#x3B5;</mi>
+                    </math>
+                  </div>
+                  <div class="rc-maths__line">
+                    <span class="rc-maths__cap">All of them, weighted, plus a smoothness penalty, with A4 pinned</span>
+                    <div class="rc-maths__row rc-maths__row--wrap">
+                    <math display="block" class="rc-maths__sm" aria-label="minimise over x: the sum over all constraints c of w sub c times the square of x sub j minus x sub i minus d sub c, plus lambda times the sum for k from 2 to 87 of the square of x sub k plus 1, minus 2 x sub k, plus x sub k minus 1">
+                      <munder><mi>min</mi><mi>x</mi></munder>
+                      <mspace width="0.3em"></mspace>
+                      <munder><mo>&#x2211;</mo><mi>c</mi></munder>
+                      <msub><mi>w</mi><mi>c</mi></msub>
+                      <msup><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mi>j</mi></msub><mo>&#x2212;</mo><msub><mi>x</mi><mi>i</mi></msub><mo>&#x2212;</mo><msub><mi>d</mi><mi>c</mi></msub><mo stretchy="false">)</mo></mrow><mn>2</mn></msup>
+                      <mo>+</mo>
+                      <mi>&#x3BB;</mi>
+                      <munderover><mo>&#x2211;</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mn>87</mn></munderover>
+                      <msup><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>&#x2212;</mo><mn>2</mn><msub><mi>x</mi><mi>k</mi></msub><mo>+</mo><msub><mi>x</mi><mrow><mi>k</mi><mo>&#x2212;</mo><mn>1</mn></mrow></msub><mo stretchy="false">)</mo></mrow><mn>2</mn></msup>
+                    </math>
+                    <math display="block" class="rc-maths__sm" aria-label="subject to x sub 49 equals 0">
+                      <mtext>with&#xA0;&#xA0;</mtext>
+                      <msub><mi class="rc-maths__hl">x</mi><mn>49</mn></msub><mo>=</mo><mn>0</mn>
+                    </math>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="rc-maths__aside">
+                <p class="rc-maths__meaning"><math><msub><mi class="rc-maths__hl">x</mi><mi>k</mi></msub></math> is how many cents key <math><mi>k</mi></math>&rsquo;s first partial sits above its equal-tempered (or chosen temperament) pitch. No single &ldquo;correct&rdquo; octave exists on a real piano: the 2nd, 4th and 6th partials of the lower note each want a slightly different upper note. The solver writes down every such wish across the keyboard, weights them by register the way a tuner listens, asks for a smooth curve, and solves all 87 unknowns exactly. A4 is not an unknown: <math><msub><mi>x</mi><mn>49</mn></msub><mo>=</mo><mn>0</mn></math> is a hard anchor.</p>
+                <ul class="rc-maths__families" aria-label="Interval families in the sum, as m to n">
+                  <li><b>2:1 · 4:2 · 6:3 · 8:4 · 10:5</b> octaves</li>
+                  <li><b>4:1</b> double octaves</li>
+                  <li><b>3:2</b> fifths</li>
+                </ul>
+              </div>
+            </div>
+            <p class="rc-maths__fine"><math><msub><mi>d</mi><mi>c</mi></msub></math> is the right-hand side of the interval equation and <math><msub><mi>w</mi><mi>c</mi></msub></math> its weight; <math><mi>&#x3BB;</mi><mo>=</mo><mn>0.05</mn></math>. <math><mi>&#x3B5;</mi></math> is a width asked for on purpose: <b>zero</b> for every octave family and for fifths, so with <math><mi>B</mi><mo>=</mo><mn>0</mn></math> the curve is exactly flat; the Pure twelfths style instead adds 3:1 twelfths with <math><mi>&#x3B5;</mi><mo>=</mo><mo form="prefix">+</mo><mn>1.955</mn></math>&nbsp;&cent;. A family is only used where its partials are measurable (below 6&nbsp;kHz). While you tune, the notes you have finished are pinned into the same system and the rest re-solves around them.</p>
+          </li>
+
+          <!-- 06 · Overpull (E7) -->
+          <li class="rc-maths__card reveal" style="--i:0">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">06</span>
+              <h3 class="rc-maths__title">Overpull: sharp on purpose</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Pitch raise</span>
+            </header>
+            <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 6, the overpull estimate">
+              <div class="rc-maths__lines">
+                <math display="block" aria-label="Phi effective equals 0.85 times Phi bar sub k, plus 0.15 times Phi sub k">
+                  <msub><mi>&#x3A6;</mi><mtext>eff</mtext></msub>
+                  <mo>=</mo>
+                  <mn>0.85</mn><mo>&#x22C5;</mo><msub><mover><mi>&#x3A6;</mi><mo>&#x203E;</mo></mover><mi>k</mi></msub>
+                  <mo>+</mo>
+                  <mn>0.15</mn><mo>&#x22C5;</mo><msub><mi>&#x3A6;</mi><mi>k</mi></msub>
+                </math>
+                <math display="block" aria-label="target sub k equals x sub k plus rho of k times Phi effective">
+                  <msub><mtext>target</mtext><mi>k</mi></msub>
+                  <mo>=</mo>
+                  <msub><mi>x</mi><mi>k</mi></msub><mo>+</mo>
+                  <mi class="rc-maths__hl">&#x3C1;</mi><mo stretchy="false">(</mo><mi>k</mi><mo stretchy="false">)</mo><mo>&#x22C5;</mo><msub><mi>&#x3A6;</mi><mtext>eff</mtext></msub>
+                </math>
+              </div>
+            </div>
+            <p class="rc-maths__meaning">Raising a flat piano loads the frame, so strings tuned early sag as the rest come up. <math><msub><mi>&#x3A6;</mi><mi>k</mi></msub></math> is how far key <math><mi>k</mi></math> has to rise (curve minus survey); <math><msub><mover><mi>&#x3A6;</mi><mo>&#x203E;</mo></mover><mi>k</mi></msub></math> is the same for its neighbours within 8 semitones, averaged with a Gaussian weight and never across the wound/plain break. The app aims sharp by a fraction <math><mi class="rc-maths__hl">&#x3C1;</mi></math> of that, between 0.12 and 0.33 depending on the register.</p>
+            <p class="rc-maths__fine"><b>An estimate, not a simulation</b> of your frame and soundboard: fixed constants, halved for strings that are already sharp, and clamped to &minus;15&nbsp;&hellip;&nbsp;+30&nbsp;&cent; (+15&nbsp;&cent; at most on wound strings). Very flat pianos get two passes instead of a bigger overpull.</p>
+          </li>
+
+          <!-- 07 · Unison (E8) -->
+          <li class="rc-maths__card reveal" style="--i:1">
+            <header class="rc-maths__head">
+              <span class="rc-maths__num" aria-hidden="true">07</span>
+              <h3 class="rc-maths__title">Two strings, one note</h3>
+              <span class="rc-maths__tag"><span class="visually-hidden">Where in the app: </span>Unison</span>
+            </header>
+            <div class="rc-maths__formula" tabindex="0" role="group" aria-label="Equation 7, unison offset and beat rate">
+              <div class="rc-maths__lines">
+                <math display="block" aria-label="offset equals 1200 times the base 2 logarithm of 1 plus Delta f over f reference">
+                  <mtext>offset</mtext>
+                  <mo>=</mo>
+                  <mn>1200</mn><mo>&#x22C5;</mo><msub><mi>log</mi><mn>2</mn></msub><mo>&#x2061;</mo>
+                  <mrow><mo>(</mo><mn>1</mn><mo>+</mo><mfrac><mrow class="rc-maths__hl"><mi mathvariant="normal">&#x394;</mi><mi>f</mi></mrow><msub><mi>f</mi><mtext>ref</mtext></msub></mfrac><mo>)</mo></mrow>
+                </math>
+                <math display="block" aria-label="beat at the fundamental equals the absolute value of Delta f, over n star times R sub n star of B">
+                  <mtext>beat&#xA0;@&#xA0;fundamental</mtext>
+                  <mo>=</mo>
+                  <mfrac>
+                    <mrow><mo stretchy="false">|</mo><mrow class="rc-maths__hl"><mi mathvariant="normal">&#x394;</mi><mi>f</mi></mrow><mo stretchy="false">|</mo></mrow>
+                    <mrow><msup><mi>n</mi><mo>&#x2217;</mo></msup><mo>&#x22C5;</mo><msub><mi>R</mi><msup><mi>n</mi><mo>&#x2217;</mo></msup></msub><mo stretchy="false">(</mo><mi>B</mi><mo stretchy="false">)</mo></mrow>
+                  </mfrac>
+                </math>
+              </div>
+            </div>
+            <p class="rc-maths__meaning">Two nearly identical strings make a slow wobble. The app isolates the partial it is listening to (<math><msup><mi>n</mi><mo>&#x2217;</mo></msup></math>), flattens out the natural decay and fits two pure tones to what is left; <math><mrow class="rc-maths__hl"><mi mathvariant="normal">&#x394;</mi><mi>f</mi></mrow></math> is the gap between them. That gives the cents between the strings, the beat at that partial (<math><mrow><mo stretchy="false">|</mo><mrow><mi mathvariant="normal">&#x394;</mi><mi>f</mi></mrow><mo stretchy="false">|</mo></mrow></math>) and at the fundamental, and which way to turn the pin, even when the wobble is slower than one cycle per listening window.</p>
+            <p class="rc-maths__fine">Illustrative numbers: A4 heard at partial 2 (about 880&nbsp;Hz) with the open string 0.50&nbsp;Hz high reads <b>+0.98&nbsp;&cent;</b>, 0.50&nbsp;Hz at partial 2, <b>0.25&nbsp;Hz</b> at the fundamental.</p>
+          </li>
+        </ol>
+
+        <!-- Worked example: research §2a, computed from E2 with B = 4.0e-4 -->
+        <section class="rc-maths__example reveal reveal--fade" aria-labelledby="maths-example-title">
+          <div class="rc-maths__example-copy">
+            <p class="rc-maths__label">Worked example · equation 02</p>
+            <h3 class="rc-maths__example-title" id="maths-example-title">Middle C, <em>eight partials up</em>.</h3>
+            <ul class="rc-maths__given" aria-label="Given values">
+              <li class="chip">C4 · <math><msub><mi>f</mi><mn>1</mn></msub></math> = 261.63&nbsp;Hz</li>
+              <li class="chip chip--amber"><math><mi>B</mi></math> = 4.0e-4</li>
+            </ul>
+            <p>The textbook column is what an ideal, perfectly flexible string would give. The real column is equation&nbsp;02. By the eighth partial the string is more than a fifth of a semitone sharp of the textbook, which is why an octave tuned to an exact 2&nbsp;:&nbsp;1 beats.</p>
+          </div>
+          <div class="rc-maths__table-wrap" tabindex="0" role="group" aria-label="Table: partials of middle C with B = 4.0e-4">
+            <table class="rc-maths__table">
+              <caption>Illustrative &mdash; the app&rsquo;s default model, not a specific piano. Offsets are <math><mi>c</mi><mo stretchy="false">(</mo><msub><mi>p</mi><mi>n</mi></msub><mo>,</mo><mi>n</mi><mo>&#x22C5;</mo><msub><mi>f</mi><mn>1</mn></msub><mo stretchy="false">)</mo></math> from equation&nbsp;01.</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Partial <small>n</small></th>
+                  <th scope="col">Textbook <small>n · f₁, Hz</small></th>
+                  <th scope="col">Real <small>pₙ, Hz</small></th>
+                  <th scope="col">Offset <small>cents</small></th>
+                  <th scope="col" class="rc-maths__bar-cell" aria-hidden="true"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">1</th><td class="rc-maths__ideal">261.63</td><td>261.63</td><td class="rc-maths__cents">0.00</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:0"></i></span></td></tr>
+                <tr><th scope="row">2</th><td class="rc-maths__ideal">523.26</td><td>523.57</td><td class="rc-maths__cents">+1.04</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:1.04"></i></span></td></tr>
+                <tr><th scope="row">3</th><td class="rc-maths__ideal">784.89</td><td>786.14</td><td class="rc-maths__cents">+2.76</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:2.76"></i></span></td></tr>
+                <tr><th scope="row">4</th><td class="rc-maths__ideal">1046.52</td><td>1049.65</td><td class="rc-maths__cents">+5.18</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:5.18"></i></span></td></tr>
+                <tr><th scope="row">5</th><td class="rc-maths__ideal">1308.15</td><td>1314.41</td><td class="rc-maths__cents">+8.27</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:8.27"></i></span></td></tr>
+                <tr><th scope="row">6</th><td class="rc-maths__ideal">1569.78</td><td>1580.73</td><td class="rc-maths__cents">+12.03</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:12.03"></i></span></td></tr>
+                <tr><th scope="row">7</th><td class="rc-maths__ideal">1831.41</td><td>1848.90</td><td class="rc-maths__cents">+16.46</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:16.46"></i></span></td></tr>
+                <tr><th scope="row">8</th><td class="rc-maths__ideal">2093.04</td><td>2119.24</td><td class="rc-maths__cents">+21.53</td><td class="rc-maths__bar-cell" aria-hidden="true"><span class="rc-maths__bar"><i style="--c:21.53"></i></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Honesty note: research §5 caveats 1–3 -->
+        <aside class="rc-maths__honesty reveal reveal--fade" aria-label="A note on accuracy">
+          <p><strong>What these numbers are, and are not.</strong> The accuracy figures are verified on synthetic test signals: inharmonicity recovered within 1&nbsp;% in five registers at 35&nbsp;dB signal-to-noise, and the frequency estimator tested against the Cram&eacute;r&ndash;Rao bound, the theoretical floor for a steady tone in noise. None of that is a promise about your piano.</p>
+          <p>On a real instrument the string, not the maths, is the limit: the stiff-string formula is an idealisation, and real strings have false beats, bridge coupling and uneven windings. So the app&rsquo;s own rule is practical: two strikes of the same note must agree on <math><mi>B</mi></math> within 5&nbsp;% (10&nbsp;% in the top octaves) before it believes either.</p>
+        </aside>
+      </div>
+      <!-- MATHS:END -->
+    </div>
+  </section>
+
+  <!-- ============ Details ============ -->
+  <section class="section section--tight" id="details" data-nav="" aria-labelledby="details-title">
+    <div class="container">
+      <header class="section__head">
+        <p class="eyebrow reveal">The details</p>
+        <h2 id="details-title" class="reveal" style="--i:1">Made for an afternoon <em>at the piano</em>.</h2>
+      </header>
+      <dl class="specs reveal reveal--fade">
+        <div class="spec"><dt>Reference pitch</dt><dd>A4 from 415 to 466&nbsp;Hz<small>in 0.1&nbsp;Hz steps; 440.0 by default.</small></dd></div>
+        <div class="spec"><dt>Temperaments</dt><dd>Equal · Werckmeister III · Kirnberger III · Vallotti · Young II · ¼-comma meantone</dd></div>
+        <div class="spec"><dt>Stretch styles</dt><dd>Standard · Light · Bass wide · Treble wide · Pure twelfths<small>Pure twelfths with equal temperament. Bass and treble trims on top.</small></dd></div>
+        <div class="spec"><dt>Sessions</dt><dd>One per piano, saved as you work<small>Layout, survey, measurements and progress. Never deleted automatically; export any session as a zip. Each device keeps its own.</small></dd></div>
+        <div class="spec"><dt>At the bench</dt><dd>Dark, big type, one step at a time<small>Readable from the bench on every screen. On the Mac, also one-key shortcuts: <span class="nowrap"><kbd>←</kbd> <kbd>→</kbd> note</span> · <span class="nowrap"><kbd>Space</kbd> lock</span> · <span class="nowrap"><kbd>M</kbd> mark tuned</span> · <span class="nowrap"><kbd>?</kbd> all of them.</span> Respects Reduce Motion.</small></dd></div>
+        <div class="spec"><dt>Shows its work</dt><dd>Nothing is hidden<small>The Curve view shows every measured note, how sure the app is, and how far a note could still move, in cents.</small></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ Privacy ============ -->
+  <section class="section section--tight" id="private" data-nav="" aria-labelledby="private-title">
+    <div class="container">
+      <div class="split split--even">
+        <div class="split__copy">
+          <p class="eyebrow reveal">Privacy</p>
+          <h2 id="private-title" class="reveal" style="--i:1">What your microphone hears <em>stays in the room</em>.</h2>
+        </div>
+        <div class="prose reveal" style="--i:2">
+          <p><strong>Resonance never goes online.</strong> No account, no tracking, no cloud. It listens on your iPhone, iPad or Mac and sends nothing anywhere.</p>
+          <p>It does keep short clips of the notes it measures, a few seconds each, stored with that piano's session on your device. Delete the session and the clips go with it.</p>
+          <p><a href="privacy.html">Read the privacy policy</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Requirements ============ -->
+  <section class="section section--tight" id="requirements" data-nav="" aria-labelledby="req-title">
+    <div class="container">
+      <header class="section__head">
+        <p class="eyebrow reveal">What you need</p>
+        <h2 id="req-title" class="reveal" style="--i:1">An iPhone, iPad or Mac, and <em>a tuning lever</em>.</h2>
+        <p class="lede reveal" style="--i:2">Resonance shows where each string is and where it should be. Turning the pin is your job, and like any hand skill it gets easier with practice.</p>
+      </header>
+      <dl class="specs reveal reveal--fade">
+        <div class="spec"><dt>iPhone and iPad</dt><dd>iOS 18 or iPadOS 18, or later</dd></div>
+        <div class="spec"><dt>Mac</dt><dd>macOS 15 or later</dd></div>
+        <div class="spec"><dt>Microphone</dt><dd>Built-in, wired or USB<small>Pick it in Settings. A good microphone helps. Bluetooth headsets are not used.</small></dd></div>
+        <div class="spec"><dt>Piano</dt><dd>Grand or upright<small>88 keys, or 85 (A0–A7).</small></dd></div>
+        <div class="spec"><dt>Tools</dt><dd>Tuning lever and mutes<small>A felt strip or rubber wedges.</small></dd></div>
+        <div class="spec"><dt>Version</dt><dd>1.0 · English<small>Music · App Store and Mac App Store</small></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section section--tight" id="faq" aria-labelledby="faq-title">
+    <div class="container container--narrow">
+      <header class="section__head">
+        <p class="eyebrow reveal">Questions</p>
+        <h2 id="faq-title" class="reveal" style="--i:1">Before you <em>reach for the lever</em>.</h2>
+      </header>
+      <!-- FAQ:START (inlined from _fragments/faq.html by _dev/inline-fragments.py) -->
+      <div class="faq reveal">
+        <details>
+          <summary>Can I really tune my own piano?</summary>
+          <div class="faq__a">
+            <p>Yes, with patience. The hard part to learn is hearing exactly where a string is and where it should be, and that's the part Resonance does for you. What's left is the hand work: small, steady turns of the tuning lever.</p>
+            <p>That takes practice, and your first tuning will take a while. Start with a piano that's close to pitch, go gently, and don't force a pin that feels wrong. If something feels off, stop and call a tuner. The app won't turn the pins for you, and it can't teach you lever technique; that comes with time.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Will it replace my piano tuner?</summary>
+          <div class="faq__a">
+            <p>No, and it isn't meant to. A tuner does more than tune: they set each pin so the tuning holds, regulate the action, voice the hammers, and fix loose pins, buzzing strings and sticking keys.</p>
+            <p>Resonance is for the times you can't get one: between visits, far from the nearest tuner, or when a visit isn't in the budget. When something needs a repair, call a professional.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Does it work on iPhone and iPad?</summary>
+          <div class="faq__a">
+            <p>Yes. The same app runs on iPhone and iPad with iOS&nbsp;18 or later, and on the Mac with macOS&nbsp;15 or later.</p>
+            <p>You can do a whole tuning on your phone: setup, the survey, a pitch raise, measuring, and every note and unison. The Mac adds a few extras for the curious: the curve charts, the unison numbers and the strobe.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What do I need besides the app?</summary>
+          <div class="faq__a">
+            <p>An iPhone or iPad with iOS&nbsp;18 or later, or a Mac with macOS&nbsp;15 or later. A tuning lever, and mutes: a felt strip or rubber wedges. The muting pictures in the app assume you have one or the other.</p>
+            <p>And a quiet room. Fans, fridges and open windows are the usual trouble.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Do I need an external microphone?</summary>
+          <div class="faq__a">
+            <p>No. The app can use the built-in microphone of your iPhone, iPad or Mac, or a wired or USB microphone or audio interface. You pick it in Settings. Bluetooth headsets aren't used, because they aren't good enough for tuning.</p>
+            <p>A good microphone helps, and Resonance was designed around one. We make no promise about how well a built-in microphone does. Setup shows a level bar so you can check: play a note and the bar should jump to about three quarters. With Advanced mode on, Setup also has a quiet check.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Does it work on an upright?</summary>
+          <div class="faq__a">
+            <p>Yes. Setup asks whether the piano is a grand or an upright, and the muting instructions change to suit: on an upright the mutes go in from the front, above the hammers. Pianos with 85 keys, which stop at A7, work too.</p>
+            <p>Each layout starts with a typical guess for where the two-string, three-string and copper-wound notes are, and you correct it for your piano. To be plain about it: the app was developed on a grand.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What is inharmonicity, in one paragraph?</summary>
+          <div class="faq__a">
+            <p>An ideal string's overtones sit at exactly 2, 3, 4… times its fundamental. A piano string is stiff steel, and the stiffness pushes each overtone a little sharp, more so the higher the overtone. How much is one number per note, called <i>B</i>, and it differs from note to note and from piano to piano. Octaves sound clean when the overtones of the two notes line up, so the right pitch for each note depends on <i>B</i>. Resonance measures <i>B</i> on your piano and works out the stretch from it.</p>
+          </div>
+        </details>
+        <details>
+          <summary>How many notes do I have to measure?</summary>
+          <div class="faq__a">
+            <p>Not all of them. Start with about nine, spread over the keyboard. The app picks them, then usually asks for a few more where they help most. Each note takes two strikes that agree.</p>
+            <p>It tells you when it has enough. <span class="chip chip--blue">curve reliable (0.7¢)</span> means more measuring could still move a note by up to 0.7 cents. Notes you haven't measured are filled in from the ones you have, and the app keeps learning from clean strikes while you tune.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What is a pitch raise, and do I need one?</summary>
+          <div class="faq__a">
+            <p>Only if the piano is well below pitch. Raising many strings adds tension to the frame and the soundboard, and that pulls the strings you've already tuned flat again. So a pitch raise is a quick rough pass that aims each string a little sharp on purpose. The careful tuning comes afterwards.</p>
+            <p>You don't have to guess. Play through the Survey and it tells you: no pitch raise, one pass, or two. It goes gently, never aiming more than 30 cents sharp, or 15 on the copper-wound strings. It warns you when a string is at risk, but it can't stop a string from breaking, so take an old piano slowly.</p>
+          </div>
+        </details>
+        <details>
+          <summary>How accurate is it?</summary>
+          <div class="faq__a">
+            <p>The needle reads to a tenth of a cent, and IN TUNE means within half a cent, held for half a second.</p>
+            <p>Our accuracy figures come from synthetic test signals, where the right answer is known exactly: there the app holds ±0.1&nbsp;cent and recovers <i>B</i> to within 2&nbsp;%. We don't quote a figure for real pianos. On a real piano the string is the limit, not the software: it drifts a little as it rings, and no two strikes are quite the same.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Can I use historical temperaments, or a different A4?</summary>
+          <div class="faq__a">
+            <p>Yes. Six temperaments are built in: Equal, Werckmeister&nbsp;III, Kirnberger&nbsp;III, Vallotti, Young&nbsp;II and ¼-comma meantone. A4 can be anywhere from 415 to 466&nbsp;Hz, in steps of 0.1&nbsp;Hz.</p>
+            <p>There are five stretch styles too, from Light to Pure twelfths. Pure twelfths needs equal temperament. You can't define a temperament of your own.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Does any sound leave my iPhone, iPad or Mac?</summary>
+          <div class="faq__a">
+            <p>No. The app makes no network connections at all. There's no account, no analytics and no cloud.</p>
+            <p>It does save some sound on the device: a clip of up to about 4&nbsp;seconds for each note it measures. The clips stay inside that piano's session and nowhere else. The <a class="link" href="privacy.html">privacy policy</a> has the details.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Where are my sessions?</summary>
+          <div class="faq__a">
+            <p>On the device you used, one folder per piano, saved automatically as you work. Sessions are never deleted automatically.</p>
+            <p>On the Mac, <b>Reveal in Finder</b> in Sessions shows the folder, and <b>Tuner › Export session folder (zip)…</b> makes a copy you can keep. On iPhone and iPad the folders are in the Files app, under On My iPhone (or iPad) › Resonance, and <b>Settings › Export session</b> makes a zip you can save or send.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Do my sessions move between my iPhone and my Mac?</summary>
+          <div class="faq__a">
+            <p>No. Each device keeps its own sessions. There's no account and no cloud, so nothing syncs. Measure and tune a piano on one device.</p>
+          </div>
+        </details>
+      </div>
+      <!-- FAQ:END -->
+      <p class="caption reveal" style="margin-top: 28px">Something else? <a class="link" href="support.html">Visit support</a>.</p>
+    </div>
+  </section>
+
+  <!-- ============ Final call to action ============ -->
+  <section class="section final" id="get" data-nav="" aria-labelledby="final-title" data-final-cta>
+    <div class="final__bg" aria-hidden="true">
+      <picture>
+        <source srcset="assets/img/film-poster.webp" type="image/webp">
+        <img src="assets/img/film-poster.jpg" alt="" width="1280" height="720" loading="lazy" decoding="async">
+      </picture>
+    </div>
+    <div class="container final__inner">
+      <span class="string-mark reveal" aria-hidden="true"></span>
+      <h2 id="final-title" class="reveal" style="--i:1">When a tuner can't come, <em>tune it yourself</em>.</h2>
+      <div class="cta-row reveal" style="--i:2; justify-content: center">
+        <div class="store-badges">
+          <a class="appstore-badge appstore-badge--ios" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103381" data-appstore="ios" aria-label="Download Resonance for iPhone and iPad on the App Store">
+            <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">App Store</span></span>
+          </a>
+          <a class="appstore-badge appstore-badge--mac" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103374?mt=12" data-appstore="mac" aria-label="Download Resonance for Mac on the Mac App Store">
+            <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">Mac App Store</span></span>
+          </a>
+        </div>
+      </div>
+      <p class="cta-note reveal" style="--i:3">iPhone and iPad with <b>iOS 18</b> or later · Mac with <b>macOS 15</b> or later</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="wordmark" href="#top" aria-label="Resonance Piano Tuner — back to top">
+          <span class="wordmark__name">RESONANCE</span>
+          <span class="string-mark" aria-hidden="true"></span>
+        </a>
+        <p>Tune your own piano, on iPhone, iPad and Mac.</p>
+      </div>
+      <nav class="footer__col" aria-label="Product">
+        <h2>Product</h2>
+        <a href="#film">The film</a>
+        <a href="#how">How it works</a>
+        <a href="#maths">The maths</a>
+        <a href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103381" data-appstore="ios">App Store</a>
+        <a href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103374?mt=12" data-appstore="mac">Mac App Store</a>
+      </nav>
+      <nav class="footer__col" aria-label="Help">
+        <h2>Help</h2>
+        <a href="#faq">FAQ</a>
+        <a href="support.html">Support</a>
+        <a href="mailto:support@resonancetuner.example">Contact</a>
+      </nav>
+      <nav class="footer__col" aria-label="Legal">
+        <h2>Legal</h2>
+        <a href="privacy.html">Privacy policy</a>
+      </nav>
+    </div>
+    <div class="footer__legal">
+      <span>© 2026 Resonance Piano Tuner. iPhone, iPad, Mac, App Store and Mac App Store are trademarks of Apple Inc.</span>
+      <button type="button" data-replay-intro>Replay the intro</button>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky-cta" role="region" aria-label="Get the app">
+  <span class="sticky-cta__label"><b>Resonance Piano Tuner</b>iPhone · iPad · Mac</span>
+  <div class="store-badges store-badges--compact">
+    <a class="appstore-badge appstore-badge--ios appstore-badge--sm" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103381" data-appstore="ios" aria-label="Download Resonance for iPhone and iPad on the App Store">
+      <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+      <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">App Store</span></span>
+    </a>
+    <a class="appstore-badge appstore-badge--mac appstore-badge--sm" href="https://apps.apple.com/us/app/resonance-piano-tuner/id6752103374?mt=12" data-appstore="mac" aria-label="Download Resonance for Mac on the Mac App Store">
+      <svg class="appstore-badge__logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+      <span class="appstore-badge__text"><span class="appstore-badge__small">Download on the</span><span class="appstore-badge__big">Mac App Store</span></span>
+    </a>
+  </div>
+</div>
+
+</div><!-- /#page -->
+
+<script>(function (d) {
+  var go = function () { if (!d.classList.contains('intro-on')) requestAnimationFrame(function () { d.classList.add('is-entered'); }); };
+  if (window.ResonanceGate && window.ResonanceGate.locked) document.addEventListener('resonance:unlocked', function () { setTimeout(go, 0); }, { once: true }); else go();
+})(document.documentElement);</script>
+<script src="js/components/partials.js" defer></script>
+<script src="js/components/tuner.js" defer></script>
+<script src="js/components/wizard.js" defer></script>
+<script src="js/components/curve.js" defer></script>
+<script src="js/components/survey.js" defer></script>
+<script src="js/components/unison.js" defer></script>
+<script src="js/film.js" defer onerror="document.documentElement.classList.add('film-native')"></script>
+<script src="js/main.js" defer onerror="document.documentElement.classList.remove('js')"></script>
+</body>
+</html>

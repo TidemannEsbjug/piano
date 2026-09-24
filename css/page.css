@@ -1,0 +1,172 @@
+/* page.css — the home page's own sections: hero, film hand-off, steps, feature rows,
+   requirements, FAQ, final call to action. Component visuals live in css/components/*.css. */
+
+/* ---------- Hero: headline + CTA sitting on the film ---------- */
+.hero { position: relative; isolation: isolate; padding-top: calc(var(--nav-h) + clamp(28px, 3.4vw, 52px)); padding-bottom: clamp(30px, 3.2vw, 46px); text-align: center; }
+.hero__bg { position: absolute; z-index: -2; inset: 0 0 auto 0; height: min(1100px, 135vh); overflow: hidden; pointer-events: none; }
+.hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; opacity: 0.55; transform: scale(1.04); transform-origin: 60% 40%; }
+html.is-entered .hero__bg img { animation: hero-dolly 28s var(--ease-out) both; }   /* the intro's slow push-in, continued */
+@keyframes hero-dolly { from { transform: scale(1.04); } to { transform: scale(1.16); } }
+.hero__bg::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 46% at 50% 30%, transparent, rgb(15 17 21 / 0.55) 70%),
+    linear-gradient(to bottom, rgb(15 17 21 / 0.62) 0%, rgb(15 17 21 / 0.35) 28%, rgb(15 17 21 / 0.82) 62%, var(--bg) 92%);
+}
+.hero__inner { display: grid; justify-items: center; gap: clamp(14px, 1.6vw, 22px); }
+.hero h1 { font-size: clamp(2.75rem, 0.9rem + 4.5vw, 4.875rem); max-width: none; white-space: nowrap; }
+@media (max-width: 1080px) { .hero h1 { max-width: 12ch; white-space: normal; } }
+.hero .lede { max-width: 60ch; font-size: clamp(1.0625rem, 0.98rem + 0.4vw, 1.3125rem); color: rgb(232 234 240 / 0.78); text-shadow: 0 1px 20px rgb(9 10 13 / 0.7); }
+.hero .cta-row { justify-content: center; margin-top: 6px; }
+.hero .cta-note { margin-top: -6px; }
+
+/* Staggered entrance, released by html.is-entered (js/main.js) */
+html.js [data-enter] { opacity: 0; transform: translateY(16px); }
+html.js.is-entered [data-enter] { opacity: 1; transform: none; transition: opacity 900ms var(--ease-out), transform 1100ms var(--ease-out); transition-delay: calc(var(--i, 0) * 110ms + 80ms); }
+html.js [data-enter="fade"] { transform: none; }
+@media (prefers-reduced-motion: reduce) { html.js [data-enter] { opacity: 1; transform: none; } html.is-entered .hero__bg img { animation: none; } }
+
+/* Under the film: the second CTA + the trust strip */
+.film-after { display: grid; gap: 28px; justify-items: center; text-align: center; margin-top: clamp(36px, 5vw, 64px); }
+.facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 12px; }
+.facts li { display: inline-flex; align-items: center; gap: 9px; padding: 8px 14px; border: 1px solid var(--hairline); border-radius: 999px; font-size: 0.875rem; color: var(--text-2); background: rgb(23 26 33 / 0.6); }
+.facts li b { color: var(--text); font-weight: 650; }
+.facts li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--in-tune); box-shadow: 0 0 8px rgb(61 220 132 / 0.8); }
+
+/* ---------- The order of work: a numbered rail ---------- */
+.steps { counter-reset: step; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-bottom: 1px solid var(--hairline); }
+.step { counter-increment: step; position: relative; padding: 28px 24px 32px 0; border-top: 1px solid var(--hairline); display: grid; gap: 10px; align-content: start; }
+.step::before { content: counter(step, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.75rem; color: var(--reference); letter-spacing: 0.08em; }
+.step::after { content: ""; position: absolute; left: 0; top: -1px; width: 36px; height: 1.5px; background: var(--reference); }
+.step:last-child { grid-column: span 2; }
+.step:last-child p { max-width: 44ch; }
+@media (max-width: 1080px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .step:last-child { grid-column: 1 / -1; } }
+@media (max-width: 600px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.step h3 { font-size: 1.125rem; }
+.step p { color: var(--text-2); font-size: 0.9375rem; }
+
+/* ---------- Feature rows ---------- */
+.feature { position: relative; }
+.feature + .feature { margin-top: clamp(88px, 12vw, 168px); }
+.feature__visual { position: relative; min-width: 0; }
+.feature__list { display: grid; gap: 14px; margin-top: 4px; }
+.feature__list li { position: relative; padding-left: 26px; color: var(--text-2); }
+.feature__list li::before { content: ""; position: absolute; left: 2px; top: 0.72em; width: 12px; height: 1.5px; background: var(--reference); }
+.feature__list li b, .feature__list li strong { color: var(--text); font-weight: 650; }
+
+/* A framed instrument panel: the app's window, abstracted. */
+.panel {
+  position: relative; border-radius: var(--radius-lg); background: linear-gradient(180deg, #151820, #0f1116); border: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 50px 100px -50px rgb(0 0 0 / 0.95), 0 30px 120px -60px rgb(255 160 70 / 0.18);
+  padding: clamp(16px, 2.2vw, 28px); overflow: hidden;
+}
+.panel__bar { display: flex; align-items: center; gap: 8px; margin: calc(clamp(16px, 2.2vw, 28px) * -1) calc(clamp(16px, 2.2vw, 28px) * -1) clamp(16px, 2.2vw, 24px); padding: 12px 16px; border-bottom: 1px solid var(--hairline); background: rgb(255 255 255 / 0.02); }
+.panel__bar i { width: 11px; height: 11px; border-radius: 50%; background: rgb(232 234 240 / 0.16); }
+.panel__bar span { margin-left: 10px; font-size: 0.75rem; font-weight: 650; letter-spacing: 0.04em; color: var(--text-2); }
+.panel__caption { margin-top: 14px; font-size: var(--step--1); color: var(--text-2); text-align: center; }
+
+/* ---------- Spec sheet ---------- */
+.specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); border-radius: var(--radius-lg); overflow: hidden; }
+.spec { background: var(--bg); padding: 26px 24px; display: grid; gap: 6px; align-content: start; }
+.spec dt { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-2); }
+.spec dd { font-size: 1.0625rem; color: var(--text); font-weight: 600; }
+.spec dd small { display: block; margin-top: 4px; font-weight: 400; }
+
+/* ---------- FAQ ---------- */
+.faq { border-top: 1px solid var(--hairline); }
+.faq details { border-bottom: 1px solid var(--hairline); }
+.faq summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; padding: 22px 0; font-size: var(--step-1); font-weight: 600; line-height: 1.3; transition: color var(--t-state) var(--ease); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--reference); }
+.faq summary::after { content: ""; width: 14px; height: 14px; flex: none; background: linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat, linear-gradient(currentColor, currentColor) center / 1.5px 100% no-repeat; transition: transform 300ms var(--ease-out); }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq__a { padding: 0 0 26px; max-width: 68ch; color: var(--text-2); }
+.faq__a > * + * { margin-top: 0.8em; }
+
+/* ---------- Final call to action ---------- */
+.final { position: relative; isolation: isolate; text-align: center; overflow: hidden; }
+.final__bg { position: absolute; inset: 0; z-index: -1; }
+.final__bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+.final__bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 50%, rgb(15 17 21 / 0.35), var(--bg) 78%), linear-gradient(to bottom, var(--bg), transparent 30%, transparent 70%, var(--bg)); }
+.final__inner { display: grid; justify-items: center; gap: 26px; }
+.final h2 { font-size: var(--step-4); max-width: 13ch; }
+.final .string-mark { --string-w: min(520px, 70vw); }
+
+/* ---------- Sub-pages (privacy, support) ---------- */
+.doc { padding-top: calc(var(--nav-h) + clamp(48px, 8vw, 112px)); padding-bottom: var(--section-y); }
+.doc__head { display: grid; gap: 18px; margin-bottom: clamp(36px, 5vw, 64px); }
+.doc h1 { font-size: var(--step-3); }
+.doc h2 { font-family: var(--font-ui); font-size: var(--step-1); font-weight: 650; letter-spacing: -0.005em; line-height: 1.25; color: var(--text); margin-top: 2.2em; }
+.doc h3 { font-size: var(--step-0); margin-top: 1.6em; }
+.doc .prose { max-width: 70ch; }
+.doc .prose ul { padding-left: 1.2em; display: grid; gap: 0.5em; }
+.doc .prose li::marker { color: var(--reference); }
+.doc table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+.doc th, .doc td { text-align: left; padding: 12px 16px 12px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+.doc th { font-size: 0.6875rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-2); font-weight: 700; }
+.doc code { font-family: var(--font-mono); font-size: 0.875em; padding: 2px 6px; border-radius: 6px; background: var(--surface-2); color: var(--text); overflow-wrap: anywhere; }
+
+@media (max-width: 900px) { .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .specs { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 560px) {
+  .hero .eyebrow::before { display: none; }
+  .hero .eyebrow { letter-spacing: 0.2em; }
+  .hero .cta-row { gap: 10px; }
+  .hero .cta-note { font-size: 0.8125rem; }
+}
+
+/* ---------- iPhone · iPad · Mac ---------- */
+.devices__list { display: grid; gap: 18px; margin-top: 6px; }
+.devices__list li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; align-items: start; color: var(--text-2); }
+.devices__list li b { display: block; color: var(--text); font-weight: 650; margin-bottom: 2px; }
+.devices__icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--hairline); color: var(--reference); }
+.devices__icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.devices__note { font-size: var(--step--1); color: var(--text-2); }
+.devices__visual { display: grid; justify-items: center; gap: 16px; min-width: 0; }
+
+/* A phone, drawn: the live tuner runs inside at iPhone size (390 pt wide). */
+.phone {
+  --bezel: 11px;
+  position: relative; width: min(100%, 392px); padding: var(--bezel); border-radius: 60px;
+  background: linear-gradient(145deg, #3a3d44, #16181c 45%, #26292f);
+  box-shadow:
+    inset 0 0 0 1.5px rgb(255 255 255 / 0.16), inset 0 0 0 var(--bezel) #07080a,
+    0 60px 120px -50px rgb(0 0 0 / 0.95), 0 40px 140px -60px rgb(255 160 70 / 0.3);
+}
+.phone::before, .phone::after { content: ""; position: absolute; left: -3px; width: 3px; border-radius: 2px 0 0 2px; background: #2b2e34; }   /* side buttons */
+.phone::before { top: 21%; height: 9%; }
+.phone::after { top: 33%; height: 9%; }
+.phone__screen { position: relative; display: flex; flex-direction: column; aspect-ratio: 402 / 874; border-radius: 49px; overflow: hidden; background: var(--bg); }
+.phone__island { position: absolute; z-index: 2; top: 11px; left: 50%; width: 31%; height: 32px; border-radius: 20px; background: #000; transform: translateX(-50%); }
+.phone__status { flex: none; display: flex; align-items: center; justify-content: space-between; height: 54px; padding: 8px 30px 0 34px; font-size: 16px; font-weight: 650; color: var(--text); }
+.phone__status svg { height: 12px; width: auto; fill: currentColor; }
+.phone__status span:last-child { display: inline-flex; gap: 6px; align-items: center; }
+.phone__nav { flex: none; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; height: 44px; padding: 0 10px; }
+.phone__nav i { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; }
+.phone__nav i::before { content: ""; width: 9px; height: 9px; margin-left: 3px; border-left: 2px solid var(--text); border-bottom: 2px solid var(--text); transform: rotate(45deg); }
+.phone__nav span { text-align: center; font-size: 17px; font-weight: 650; }
+.phone__content { flex: 1; min-height: 0; overflow: hidden; padding: 4px 14px 0; }
+.phone__home { position: absolute; left: 50%; bottom: 8px; width: 36%; height: 5px; border-radius: 3px; background: rgb(232 234 240 / 0.7); transform: translateX(-50%); }
+@media (max-width: 420px) { .phone { --bezel: 9px; border-radius: 52px; } .phone__screen { border-radius: 43px; } .phone__status { padding-inline: 26px; } }
+
+/* The tuner inside the phone: laid out like the iPhone app — note and needle on top, the guide below,
+   the keyboard pinned to the bottom. The level row and the web-only pin control are left out. */
+.phone .rc-tuner { height: 100%; }
+.phone .rc-tuner .rc-tuner__root { display: flex; flex-direction: column; gap: 8px; height: 100%; }
+.phone .rc-tuner .rc-tuner__main { flex: 1 1 auto; min-height: 0; overflow: hidden; gap: 8px; align-content: start;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 36px), transparent); mask-image: linear-gradient(#000 calc(100% - 36px), transparent); }
+.phone .rc-tuner .rc-tuner__controls, .phone .rc-tuner .rc-tuner__level { display: none; }
+.phone .rc-tuner .rc-tuner__readout { gap: 2px; }
+.phone .rc-tuner .rc-tuner__note { font-size: 46px; }
+.phone .rc-tuner .rc-tuner__hint { margin-top: 2px; font-size: 0.8125rem; }
+.phone .rc-tuner .rc-tuner__row2 { font-size: 34px; min-height: 0; }
+.phone .rc-tuner .rc-tuner__row3 { font-size: 17px; min-height: 0; }
+.phone .rc-tuner .rc-tuner__needle { aspect-ratio: 600 / 250; }
+.phone .rc-tuner .rc-tuner__guide { gap: 8px; padding: 12px 12px 4px; }
+.phone .rc-tuner .rc-tuner__gname { font-size: 1.25rem; }
+.phone .rc-tuner .rc-tuner__gtitle { font-size: 1.125rem; }
+.phone .rc-tuner .rc-tuner__gbody { font-size: 0.8125rem; line-height: 1.45; }
+.phone .rc-tuner .rc-tuner__gpanel { gap: 8px; }
+.phone .rc-tuner .rc-tuner__kbd { flex: none; padding-bottom: 22px; }   /* clear of the home indicator */

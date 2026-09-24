@@ -1,0 +1,96 @@
+/* curve.css — the Curve view's two per-key charts (js/components/curve.js).
+   Cards, StateBadge pills and type sizes follow App/Theme.swift, scaled for a ~640 px column. */
+
+.rc-curve { position: relative; font-family: var(--font-ui); font-variant-numeric: tabular-nums; color: var(--text); }
+.rc-curve .rc-fallback { padding: 20px 8px; font-size: 0.9375rem; line-height: 1.6; color: var(--text-2); max-width: 60ch; }
+
+.rc-curve .rc-curve__root { display: grid; gap: 10px; min-width: 0; }
+
+/* Header: subtitle, readiness badge, max-risk badge, replay */
+.rc-curve .rc-curve__head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; }
+.rc-curve .rc-curve__sub { font-size: 0.8125rem; line-height: 1.3; color: var(--text-2); }
+.rc-curve .rc-curve__badges { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 22px; }
+
+/* StateBadge.swift: capsule, 22 high, 8 horizontal, 13 medium, fill 15 %, stroke 50 % */
+.rc-curve .rc-curve__badge {
+  --c: var(--text-2);
+  display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; white-space: nowrap;
+  font-size: 0.8125rem; font-weight: 550; line-height: 1; color: var(--c);
+  background: var(--surface-2); border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--c) 15%, transparent); border-color: color-mix(in srgb, var(--c) 50%, transparent);
+  transition: color var(--t-state) var(--ease), background-color var(--t-state) var(--ease), border-color var(--t-state) var(--ease);
+}
+.rc-curve .rc-curve__badge--grey { --c: var(--text-2); }
+.rc-curve .rc-curve__badge--amber { --c: var(--warn); }
+.rc-curve .rc-curve__badge--blue { --c: var(--accent); }
+.rc-curve .rc-curve__badge--green { --c: var(--in-tune); }
+.rc-curve .rc-curve__badge--purple { --c: var(--measured); }
+
+.rc-curve .rc-curve__btn {
+  position: relative; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 9px; border-radius: 999px;
+  border: 1px solid rgb(79 163 255 / 0.5); color: var(--accent); font-size: 0.8125rem; font-weight: 650; line-height: 1; white-space: nowrap;
+  transition: background-color var(--t-state) var(--ease), border-color var(--t-state) var(--ease);
+}
+.rc-curve .rc-curve__btn::after { content: ""; position: absolute; inset: -8px -4px; }   /* 44 px hit area */
+.rc-curve .rc-curve__btn:hover { background: rgb(79 163 255 / 0.12); border-color: var(--accent); }
+.rc-curve .rc-curve__btn svg { width: 14px; height: 14px; flex: none; }
+
+/* Chart area: two cards and the key strip share one x axis, one crosshair and one range input */
+.rc-curve .rc-curve__stage { position: relative; display: grid; gap: 10px; min-width: 0; touch-action: pan-y; cursor: crosshair; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.rc-curve .rc-curve__card { min-width: 0; padding: 12px 12px 8px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); }
+.rc-curve .rc-curve__title { font-size: 0.9375rem; font-weight: 650; line-height: 1.25; color: var(--text); }
+.rc-curve .rc-curve__title i { font-style: italic; }
+.rc-curve .rc-curve__subtitle { margin-top: 2px; font-size: 0.75rem; line-height: 1.4; color: var(--text-2); text-wrap: balance; }
+.rc-curve sub { font-size: 0.72em; line-height: 0; vertical-align: -0.28em; }
+.rc-curve .rc-curve__canvas { display: block; width: 100%; height: auto; aspect-ratio: 3 / 1; min-height: 164px; max-height: 320px; margin-top: 8px; }
+.rc-curve .rc-curve__strip { padding: 0 13px; margin-top: -2px; }               /* card padding + border, so the keys sit under the plots */
+.rc-curve .rc-curve__canvas--keys { height: 27px; min-height: 0; aspect-ratio: auto; margin-top: 0; }
+
+.rc-curve .rc-curve__range {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; pointer-events: none;
+  -webkit-appearance: none; appearance: none; background: transparent; border-radius: 12px; outline-offset: 4px;
+}
+.rc-curve .rc-curve__range::-webkit-slider-runnable-track { background: transparent; border: 0; }
+.rc-curve .rc-curve__range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 1px; height: 1px; background: transparent; border: 0; box-shadow: none; }
+.rc-curve .rc-curve__range::-moz-range-track { background: transparent; border: 0; }
+.rc-curve .rc-curve__range::-moz-range-thumb { width: 1px; height: 1px; background: transparent; border: 0; }
+.rc-curve .rc-curve__range:focus-visible { outline: 2px solid var(--accent); }
+
+/* Hover row (CurveView.rowCard) */
+.rc-curve .rc-curve__row { display: grid; gap: 8px; padding: 10px 12px 12px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); }
+.rc-curve .rc-curve__rowtop { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 26px; }
+.rc-curve .rc-curve__note { font-size: 1.375rem; font-weight: 650; line-height: 1; letter-spacing: -0.01em; }
+.rc-curve .rc-curve__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px 12px; margin: 0; }
+.rc-curve .rc-curve__cell { display: flex; align-items: baseline; gap: 5px; min-width: 0; font-size: 0.8125rem; line-height: 1.45; white-space: nowrap; }
+.rc-curve .rc-curve__cell dt { color: var(--text-2); }
+.rc-curve .rc-curve__cell dd { margin: 0; color: var(--text); }
+
+/* Legend + count */
+.rc-curve .rc-curve__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 16px; }
+.rc-curve .rc-curve__legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; font-size: 0.75rem; line-height: 1.4; color: var(--text-2); }
+.rc-curve .rc-curve__legend li { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.rc-curve .rc-curve__legend i { font-style: italic; }
+.rc-curve .rc-curve__sw { flex: none; display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+.rc-curve .rc-curve__sw--line-a { height: 2px; border-radius: 1px; background: var(--accent); }
+.rc-curve .rc-curve__sw--line-p { height: 2px; border-radius: 1px; background: var(--measured); }
+.rc-curve .rc-curve__sw--band-a { background: rgb(79 163 255 / 0.18); background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: inset 0 0 0 1px rgb(79 163 255 / 0.35); }
+.rc-curve .rc-curve__sw--band-p { background: rgb(167 139 250 / 0.18); background: color-mix(in srgb, var(--measured) 18%, transparent); box-shadow: inset 0 0 0 1px rgb(167 139 250 / 0.35); }
+.rc-curve .rc-curve__sw--dot-p, .rc-curve .rc-curve__sw--dot-r { width: 7px; height: 7px; border-radius: 50%; }
+.rc-curve .rc-curve__sw--dot-p { background: var(--measured); }
+.rc-curve .rc-curve__sw--dot-r { background: var(--reference); }
+.rc-curve .rc-curve__count { font-size: 0.75rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+
+/* Narrow columns (set by the component's ResizeObserver below 480 px) */
+.rc-curve.is-narrow .rc-curve__more { display: none; }
+.rc-curve.is-narrow .rc-curve__card { padding: 10px 8px 6px; }
+.rc-curve.is-narrow .rc-curve__strip { padding: 0 9px; }
+.rc-curve.is-narrow .rc-curve__row { padding: 10px; }
+.rc-curve.is-narrow .rc-curve__grid { gap: 6px 8px; }
+.rc-curve.is-narrow .rc-curve__cell { flex-direction: column; align-items: flex-start; gap: 0; font-size: 0.75rem; line-height: 1.3; }
+.rc-curve.is-narrow .rc-curve__cell dt { font-size: 0.6875rem; }
+.rc-curve.is-narrow .rc-curve__legend { gap: 4px 10px; font-size: 0.6875rem; }
+
+@media (pointer: coarse) {
+  .rc-curve .rc-curve__btn { height: 32px; }
+  .rc-curve .rc-curve__btn::after { inset: -6px -4px; }
+}

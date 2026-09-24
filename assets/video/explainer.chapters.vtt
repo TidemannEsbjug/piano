@@ -1,0 +1,26 @@
+WEBVTT
+
+NOTE
+Chapters for the explainer film. The cue identifiers (why, measure, curve, tune, unisons) are what the
+"Watch this part" links on the page point at via data-film-chapter — keep the ids, change times and titles.
+These times fit the 11-second stand-in clip; replace them with the real film's chapter times.
+
+why
+00:00:00.000 --> 00:00:02.300
+Why stretch
+
+measure
+00:00:02.300 --> 00:00:04.600
+Measure
+
+curve
+00:00:04.600 --> 00:00:06.900
+The curve
+
+tune
+00:00:06.900 --> 00:00:09.100
+Tune
+
+unisons
+00:00:09.100 --> 00:00:11.290
+Unisons

@@ -1,0 +1,68 @@
+/* intro.css — the app's launch intro (App/Views/Shell/IntroView.swift) as the site loader.
+   Geometry is a 1:1 port; timings live in js/intro.js (app timings ÷ 1.5). */
+
+/* Decided before first paint by the inline script in <head>. */
+html.intro-off .intro { display: none; }
+html.intro-on { overflow: hidden; }
+html.intro-on body { overflow: hidden; }
+
+.intro {
+  --title: clamp(28px, 5.2vw, 92px);                 /* max(48, min(w × 0.052, 92)); floor lowered for phones */
+  position: fixed; inset: 0; z-index: 1000;
+  background: #000; color: var(--text);
+  cursor: pointer; overflow: hidden;
+  opacity: 1; transition: opacity var(--intro-fade, 470ms) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+  contain: strict;
+}
+.intro.is-leaving { opacity: 0; pointer-events: none; }
+.intro:focus { outline: none; }
+
+.intro__media, .intro__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }  /* .resizeAspectFill */
+.intro__poster { z-index: 0; }
+.intro__media { z-index: 1; opacity: 0; transition: opacity 240ms linear; background: #000; }
+.intro__media.is-playing { opacity: 1; }
+
+/* LinearGradient([.clear, .black 18 %, .black 62 %], center → bottom) */
+.intro__shade { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(to bottom, transparent 50%, rgb(0 0 0 / 0.18) 75%, rgb(0 0 0 / 0.62) 100%); }
+
+/* titlePlate: centred, then offset down by 18 % of the height. */
+.intro__plate {
+  position: absolute; z-index: 3; left: 50%; top: calc(50% + 18vh); top: calc(50% + 18dvh);
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--title) * 0.22);
+  filter: drop-shadow(0 10px 28px rgb(0 0 0 / 0.75));
+  opacity: 0; transition: opacity var(--intro-title-fade, 630ms) var(--ease);
+  pointer-events: none; text-align: center; white-space: nowrap;
+}
+.intro__plate.is-in { opacity: 1; }
+.intro__name {
+  font-family: var(--font-ui); font-weight: 600; font-size: var(--title); line-height: 1.19;
+  letter-spacing: 0.28em; padding-left: 0.28em;      /* tracking(size × 0.28); pad re-centres the trailing gap */
+  color: var(--text);
+}
+.intro__sub {
+  font-family: var(--font-ui); font-weight: 500; font-size: max(12px, calc(var(--title) * 0.22)); line-height: 1.19;
+  letter-spacing: calc(var(--title) * 0.18); padding-left: calc(var(--title) * 0.18);
+  color: var(--text-2);
+}
+.intro .string-mark { --string-w: min(520px, calc(var(--title) * 7.2), 86vw); }
+.intro .string-mark::after { animation-name: intro-node-pulse; animation-play-state: paused; }   /* IntroView: 7→9 pt, glow radius 7→12 */
+@keyframes intro-node-pulse { from { transform: scale(1); box-shadow: 0 0 7px rgb(61 220 132 / 0.95); } to { transform: scale(1.2857); box-shadow: 0 0 9.3px rgb(61 220 132 / 0.95); } }
+.intro__plate.is-in .string-mark::after { animation-play-state: running; }
+
+.intro__skip {
+  position: absolute; z-index: 4; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  padding: 6px 12px; border-radius: 8px;
+  font-family: var(--font-ui); font-size: 13px; color: var(--dim);
+  opacity: 0; transition: opacity var(--intro-skip-fade, 530ms) var(--ease), color var(--t-state) var(--ease);
+}
+.intro__skip.is-in { opacity: 1; }
+.intro__skip:hover, .intro__skip:focus-visible { color: var(--text); }
+
+@media (max-width: 700px) {
+  .intro { --title: clamp(28px, 7.6vw, 48px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro__media { display: none; }
+}
